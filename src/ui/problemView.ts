@@ -74,7 +74,13 @@ export function renderHint(hint: Hint): HTMLElement {
             'div',
             { class: 'bars-fill', style: `width:${(rowTotal(r.parts) / scale) * 100}%` },
             r.parts.map((p) =>
-              h('span', { class: `bar-part${p.value === '?' ? ' unknown' : ''}`, style: `flex-grow:${width(r.parts, p)}` }, fmt(p.value)),
+              h(
+                'span',
+                { class: `bar-part${p.value === '?' ? ' unknown' : ''}`, style: `flex-grow:${width(r.parts, p)}` },
+                // la quantité en blocs : on peut compter les dizaines et les unités
+                p.value !== '?' && p.value < 1000 && Number.isInteger(p.value) ? blocksFor(p.value) : null,
+                h('span', { class: 'bar-number' }, fmt(p.value)),
+              ),
             ),
           ),
         ),
@@ -97,7 +103,10 @@ export function tripleCode(n: number, orthographe: Orthographe): HTMLElement {
 export interface ProblemOptions {
   orthographe: Orthographe;
   title: string;
-  onDone: (result: { firstTry: boolean; hints: number }) => void;
+  /** `solved` : trouvé (avec ou sans aide) ; faux après 3 essais, la réponse est montrée. */
+  onDone: (result: { solved: boolean; firstTry: boolean; hints: number }) => void;
+  /** Fermeture sans répondre. */
+  onClose?: () => void;
 }
 
 const MAX_TRIES = 3;
@@ -105,6 +114,7 @@ const MAX_TRIES = 3;
 export function openProblem(p: Problem, opts: ProblemOptions): void {
   let tries = 0;
   let hints = 0;
+  let result: { solved: boolean; firstTry: boolean; hints: number } | null = null;
   const feedback = h('div', { class: 'feedback', 'aria-live': 'polite' });
   const hintBox = h('div', { class: 'hint', hidden: true }, h('h3', {}, '💡 Indice'), renderHint(p.hint));
   const showHint = () => {
@@ -112,10 +122,11 @@ export function openProblem(p: Problem, opts: ProblemOptions): void {
     hintBox.hidden = false;
   };
 
-  const finish = (firstTry: boolean, message: string, cls: string) => {
+  const finish = (solved: boolean, firstTry: boolean, message: string, cls: string) => {
+    result = { solved, firstTry, hints };
     answerZone.replaceChildren(
       h('div', { class: `result ${cls}` }, h('p', {}, message), tripleCode(p.answer, opts.orthographe)),
-      h('button', { class: 'btn primary', type: 'button', onclick: () => { close(); opts.onDone({ firstTry, hints }); } }, 'Continuer →'),
+      h('button', { class: 'btn primary', type: 'button', onclick: () => { close(); opts.onDone(result!); } }, 'Continuer →'),
     );
     hintButton.remove();
   };
@@ -123,13 +134,13 @@ export function openProblem(p: Problem, opts: ProblemOptions): void {
   const check = (value: number, card?: HTMLElement) => {
     if (isCorrect(p, value)) {
       speak('Bravo !');
-      finish(tries === 0, tries === 0 ? '🎉 Bravo, du premier coup !' : '🎉 Bravo, tu as trouvé !', 'ok');
+      finish(true, tries === 0, tries === 0 ? '🎉 Bravo, du premier coup !' : '🎉 Bravo, tu as trouvé !', 'ok');
       return;
     }
     tries++;
     card?.classList.add('wrong');
     if (tries >= MAX_TRIES) {
-      finish(false, 'La bonne réponse était :', 'reveal');
+      finish(false, false, 'La bonne réponse était :', 'reveal');
       return;
     }
     feedback.textContent = tries === 1 ? 'Pas tout à fait… Regarde l’indice et réessaie !' : 'Encore un essai !';
@@ -177,5 +188,6 @@ export function openProblem(p: Problem, opts: ProblemOptions): void {
     answerZone,
     h('div', { class: 'problem-actions' }, hintButton),
   );
-  const close = openModal(content, 'problem-modal');
+  // fermer après avoir répondu vaut « Continuer » ; avant, c'est abandonner
+  const close = openModal(content, 'problem-modal', () => (result ? opts.onDone(result) : opts.onClose?.()));
 }

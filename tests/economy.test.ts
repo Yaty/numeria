@@ -12,6 +12,8 @@ import {
   openRanks,
   produce,
   repairFactory,
+  rewardFactory,
+  rewardRank,
   tap,
   tick,
   totalValue,
@@ -148,7 +150,7 @@ describe('usines', () => {
     tick(g, 0.5);
     expect(g.counts[0]).toBe(4);
   });
-  it('une usine en panne ne produit plus ; réparée elle produit double pendant 30 s', () => {
+  it('une usine en panne ne produit plus ; réparée elle repart', () => {
     const g = newGame(1, { factoryRate: 1 });
     produce(g, 0, 10);
     buildFactory(g, 0);
@@ -157,7 +159,30 @@ describe('usines', () => {
     expect(g.counts[0]).toBe(0);
     repairFactory(g, g.factories[0].id);
     tick(g, 3);
-    expect(g.counts[0]).toBe(6);
+    expect(g.counts[0]).toBe(3);
+  });
+  it('une enquête réussie offre une usine ; dorée (×3) si réussie du premier coup', () => {
+    const g = newGame(1, { factoryRate: 1 });
+    rewardFactory(g, 0, true);
+    rewardFactory(g, 0, false);
+    expect(g.factories).toHaveLength(2);
+    expect(g.factories[0].golden).toBe(true);
+    tick(g, 2);
+    expect(g.counts[0]).toBe(8); // 2 s × (3 + 1)
+  });
+  it('les usines offertes ne rendent pas les usines achetées plus chères', () => {
+    const g = newGame(1);
+    rewardFactory(g, 0, true);
+    expect(factoryCost(g, 0)).toBe(10);
+  });
+  it('la récompense va au rang de l’usine réparée, sinon au plus grand rang équipé', () => {
+    const g = newGame(1);
+    expect(rewardRank(g)).toBe(0);
+    produce(g, 2, 10);
+    exchange(g, 2);
+    g.counts[3] = 1;
+    buildFactory(g, 1);
+    expect(rewardRank(g)).toBe(1);
   });
   it('les pannes surviennent selon l’intervalle réglé, une seule à la fois', () => {
     const g = newGame(1, { breakdownInterval: 10 });

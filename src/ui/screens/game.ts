@@ -18,7 +18,6 @@ import { setVoiceEnabled, speak } from '../speech';
 const ZW = 1000;
 const ZH = 620;
 const F = 2.4;
-const BOOST_SECONDS = 30;
 
 const zoneScale = (cls: number) => F ** cls;
 function zoneLeft(cls: number): number {
@@ -141,9 +140,10 @@ export function showGame(root: HTMLElement, profile: Profile, onExit: () => void
       const groups = ranksOfClass(cls)
         .map((rank) => {
           const fs = g.factories.filter((f) => f.rank === rank);
-          return { rank, n: fs.length, broken: fs.some((f) => f.broken), boost: fs.some((f) => f.boostUntil > g.time) };
+          const golden = fs.filter((f) => f.golden).length;
+          return { rank, n: fs.length - golden, golden, broken: fs.some((f) => f.broken) };
         })
-        .filter((x) => x.n > 0);
+        .filter((x) => x.n + x.golden > 0);
       const key = JSON.stringify(groups);
       if (key === row.key) continue;
       row.key = key;
@@ -152,13 +152,14 @@ export function showGame(root: HTMLElement, profile: Profile, onExit: () => void
           h(
             'button',
             {
-              class: `factory${x.broken ? ' broken' : ''}${x.boost ? ' boost' : ''}`,
+              class: `factory${x.broken ? ' broken' : ''}${x.golden ? ' golden' : ''}`,
               type: 'button',
               title: factoryName(x.rank),
               onclick: () => x.broken && investigate(),
             },
             h('span', { class: 'factory-icon' }, x.broken ? '🔍' : '🏭'),
             h('span', { class: 'factory-label' }, `${rankLetter(x.rank)} ×${x.n}`),
+            x.golden ? h('span', { class: 'factory-golden' }, `⭐×${x.golden}`) : null,
           ),
         ),
       );
@@ -366,17 +367,21 @@ export function showGame(root: HTMLElement, profile: Profile, onExit: () => void
             type: 'button',
             onclick: () => {
               close();
-              modalOpen = false;
-              camClass = g.currentClass;
-              applyCamera(true);
-              save();
+              explore();
             },
           },
           'Explorer →',
         ),
       ),
       'celebrate-modal',
+      () => explore(),
     );
+    function explore() {
+      modalOpen = false;
+      camClass = g.currentClass;
+      applyCamera(true);
+      save();
+    }
   }
 
   function investigate() {
@@ -387,16 +392,32 @@ export function showGame(root: HTMLElement, profile: Profile, onExit: () => void
     openProblem(problem, {
       orthographe: s.orthographe,
       title: broken ? `🕵️ L’${factoryName(broken.rank)} est en panne !` : '🕵️ Défi du détective',
-      onDone: ({ firstTry, hints }) => {
+      onClose: () => {
+        modalOpen = false;
+      },
+      onDone: ({ solved, firstTry, hints }) => {
         modalOpen = false;
         recordAttempt(profile, { kind: problem.kind, level: s.level, mode: problem.answerMode, firstTry, hints });
         if (broken) E.repairFactory(g, broken.id);
-        else for (const f of g.factories) f.boostUntil = g.time + BOOST_SECONDS;
-        speak(broken ? 'L’usine est réparée ! Elle produit deux fois plus vite.' : 'Toutes les usines produisent deux fois plus vite !');
+        if (solved) {
+          const rank = broken?.rank ?? E.rewardRank(g);
+          E.rewardFactory(g, rank, firstTry);
+          const prize = firstTry ? `une usine dorée à ${rankName(rank)}, trois fois plus rapide` : `une usine à ${rankName(rank)}`;
+          toast(`${firstTry ? '⭐' : '🏭'} Tu gagnes ${prize} !`);
+          speak(`${broken ? 'L’usine est réparée ! ' : ''}Tu gagnes ${prize} !`);
+        } else if (broken) {
+          toast('🔧 L’usine est réparée.');
+        }
         save();
         update(true);
       },
     });
+  }
+
+  function toast(text: string) {
+    const el = h('div', { class: 'toast' }, text);
+    screen.append(el);
+    setTimeout(() => el.remove(), 4000);
   }
 
   // ---------- Boucle ----------

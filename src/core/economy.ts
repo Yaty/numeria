@@ -8,7 +8,8 @@ import { MAX_RANK, classOf, fromMilli, milliValue, toMilli } from './numbers';
 export const CAPACITY = 19;
 export const MANUAL_EXCHANGES_FOR_MACHINE = 10;
 const FACTORY_COST_GROWTH = 1.35;
-const BOOST_SECONDS = 30;
+/** Une usine dorée (gagnée en enquête du premier coup) produit 3 fois plus vite. */
+export const GOLDEN_MULTIPLIER = 3;
 
 export type UniverseLevel = 1 | 2 | 3;
 /** progressive : manuel, puis machine à échanger achetable après 10 échanges. */
@@ -28,7 +29,10 @@ export interface Factory {
   id: string;
   rank: number;
   broken: boolean;
-  boostUntil: number;
+  /** Gagnée en enquête du premier coup : produit plus vite. */
+  golden?: boolean;
+  /** Offerte par une enquête : ne compte pas dans le prix des usines. */
+  gift?: boolean;
 }
 
 export interface GameState {
@@ -161,7 +165,7 @@ export function availableFactoryRanks(g: GameState): number[] {
 }
 
 export function factoryCost(g: GameState, rank: number): number {
-  const owned = g.factories.filter((f) => f.rank === rank).length;
+  const owned = g.factories.filter((f) => f.rank === rank && !f.gift).length;
   return fromMilli(Math.ceil(10 * FACTORY_COST_GROWTH ** owned) * milliValue(rank));
 }
 
@@ -190,15 +194,26 @@ function pay(g: GameState, cost: number): boolean {
 
 export function buildFactory(g: GameState, rank: number): boolean {
   if (!availableFactoryRanks(g).includes(rank) || !pay(g, toMilli(factoryCost(g, rank)))) return false;
-  g.factories.push({ id: `u${g.nextFactoryId++}`, rank, broken: false, boostUntil: 0 });
+  g.factories.push({ id: `u${g.nextFactoryId++}`, rank, broken: false });
   return true;
+}
+
+/** Récompense d'enquête : une usine gratuite, dorée si l'enquête est réussie du premier coup. */
+export function rewardFactory(g: GameState, rank: number, golden: boolean): void {
+  g.factories.push({ id: `u${g.nextFactoryId++}`, rank, broken: false, golden, gift: true });
+}
+
+/** Rang de la récompense d'un défi sans panne : le plus grand rang déjà équipé d'usines. */
+export function rewardRank(g: GameState): number {
+  const available = availableFactoryRanks(g);
+  const equipped = g.factories.map((f) => f.rank).filter((r) => available.includes(r));
+  return equipped.length ? Math.max(...equipped) : 0;
 }
 
 export function repairFactory(g: GameState, factoryId: string): void {
   const f = g.factories.find((x) => x.id === factoryId);
   if (!f) return;
   f.broken = false;
-  f.boostUntil = g.time + BOOST_SECONDS;
 }
 
 export function moveLeft(g: GameState): boolean {
@@ -213,7 +228,7 @@ export function tick(g: GameState, dt: number, rng: () => number = Math.random):
 
   for (const f of g.factories) {
     if (f.broken) continue;
-    const rate = (g.options.factoryRate ?? DEFAULT_OPTIONS.factoryRate) * (f.boostUntil > g.time ? 2 : 1);
+    const rate = (g.options.factoryRate ?? DEFAULT_OPTIONS.factoryRate) * (f.golden ? GOLDEN_MULTIPLIER : 1);
     const p = (g.progress[f.id] ?? 0) + rate * dt;
     const made = Math.floor(p);
     g.progress[f.id] = p - made;

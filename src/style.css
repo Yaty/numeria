@@ -529,15 +529,6 @@ h3 {
   font-weight: 700;
 }
 
-.factory.boost {
-  border-color: #ffc93c;
-  box-shadow: 0 0 24px #ffd84d;
-}
-
-.factory.boost .factory-icon {
-  animation-duration: 0.6s;
-}
-
 .factory.broken {
   cursor: pointer;
   border-color: var(--bad);
@@ -747,7 +738,51 @@ h3 {
   animation: fade 0.2s;
 }
 
+.modal-close {
+  position: sticky;
+  top: 0;
+  float: right;
+  margin: -8px -12px 0 0;
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--muted);
+  z-index: 1;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  top: 96px;
+  transform: translateX(-50%);
+  background: #fff8dd;
+  border: 3px solid #ffc93c;
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.15);
+  z-index: 5;
+  animation: rise 0.3s ease-out;
+}
+
+.factory-golden {
+  font-size: 22px;
+  font-weight: 700;
+  color: #b58100;
+}
+
+.factory.golden {
+  border-color: #ffc93c;
+  box-shadow: 0 0 24px #ffd84d;
+}
+
 .modal {
+  position: relative;
   background: #fff;
   border-radius: 24px;
   width: min(780px, 100%);
@@ -975,9 +1010,14 @@ h3 {
 }
 
 .bar-part {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
   flex-basis: 0;
   min-width: 34px;
-  padding: 8px 2px;
+  padding: 6px 2px;
   border: 2px solid #2f7de1;
   background: #dbe8ff;
   text-align: center;
@@ -985,6 +1025,25 @@ h3 {
   font-variant-numeric: tabular-nums;
   overflow: hidden;
   white-space: nowrap;
+}
+
+.bar-part .blocks {
+  --u: 8px;
+  margin: 0;
+}
+
+.bar-part .blk-group {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.bar-number {
+  font-size: 1.1rem;
+}
+
+.bar-part.unknown .bar-number {
+  font-size: 1.6rem;
 }
 
 .bar-part + .bar-part {
