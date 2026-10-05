@@ -1,0 +1,8 @@
+<% content_for :title, "Mot de passe oublié" %>
+<div class="card narrow">
+  <h1>Mot de passe oublié</h1>
+  <%= form_with url: passwords_path, class: "form" do |form| %>
+    <label>Adresse e-mail <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username" %></label>
+    <%= form.submit "Recevoir un lien de réinitialisation", class: "btn primary" %>
+  <% end %>
+</div>

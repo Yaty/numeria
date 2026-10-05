@@ -7,7 +7,7 @@ import * as E from '../../core/economy';
 import { MAX_CLASS, className, formatNumber, rankLetter, rankName, ranksOfClass } from '../../core/numbers';
 import { generateProblem } from '../../core/problems';
 import { recordAttempt, type Profile } from '../../core/profile';
-import { save } from '../app';
+import { hooks, save } from '../app';
 import { blockStack, CLASS_COLORS, words } from '../codes';
 import { h } from '../dom';
 import { openModal } from '../modal';
@@ -37,7 +37,8 @@ interface BinRef {
   shown: number;
 }
 
-export function showGame(root: HTMLElement, profile: Profile, onExit: () => void): void {
+/** Rend une fonction qui arrête la partie (boucle, minuteries) sans quitter l'écran. */
+export function showGame(root: HTMLElement, profile: Profile, onExit: () => void): () => void {
   const g = profile.game!;
   const s = profile.settings;
   setVoiceEnabled(s.voice);
@@ -406,6 +407,7 @@ export function showGame(root: HTMLElement, profile: Profile, onExit: () => void
       onDone: ({ solved, firstTry, hints }) => {
         modalOpen = false;
         recordAttempt(profile, { kind: problem.kind, level: s.level, mode: problem.answerMode, firstTry, hints });
+        hooks.attempt(profile.history[profile.history.length - 1]);
         if (broken) E.repairFactory(g, broken.id);
         if (solved) {
           const rank = broken?.rank ?? E.rewardRank(g);
@@ -449,20 +451,29 @@ export function showGame(root: HTMLElement, profile: Profile, onExit: () => void
   window.addEventListener('resize', onResize);
   document.addEventListener('visibilitychange', onHide);
 
-  function exit() {
+  let stopped = false;
+  function stop() {
+    if (stopped) return;
+    stopped = true;
     stopVoiceWatch();
     cancelAnimationFrame(raf);
     clearInterval(saveTimer);
     window.removeEventListener('resize', onResize);
     document.removeEventListener('visibilitychange', onHide);
     save();
+  }
+
+  function exit() {
+    stop();
     onExit();
   }
 
   buildWorld();
   update(true);
   requestAnimationFrame(() => {
+    if (stopped) return;
     applyCamera(false);
     raf = requestAnimationFrame(frame);
   });
+  return stop;
 }

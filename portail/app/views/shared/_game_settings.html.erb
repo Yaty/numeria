@@ -1,0 +1,12 @@
+<%# Niveau imposé par jeu. locals: profile, url %>
+<div class="settings-grid">
+  <% Game.all.reject { |g| g.slug == "numeria" }.each do |g| %>
+    <% current = profile.game_states.find { |gs| gs.game_slug == g.slug }&.settings&.dig("level") %>
+    <%= form_with url: url, class: "setting-row" do |f| %>
+      <%= hidden_field_tag :slug, g.slug %>
+      <span><%= g.emoji %> <%= g.title %></span>
+      <%= select_tag :level, options_for_select([ [ "Automatique", "auto" ] ] + g.levels.each_with_index.map { |l, i| [ "#{i + 1} — #{l}", (i + 1).to_s ] }, current.to_s), onchange: "this.form.requestSubmit()", "aria-label": "Niveau de #{g.title}" %>
+    <% end %>
+  <% end %>
+  <p class="muted small">Numéria se règle dans le jeu : bouton ⚙️ en bas à gauche (visible par l’orthophoniste, ou par le parent après saisie du mot de passe).</p>
+</div>

@@ -120,7 +120,7 @@ export function statsByKind(p: Profile): Partial<Record<ProblemKind, { attempts:
   return stats;
 }
 
-function withDefaults(raw: Profile): Profile {
+export function withDefaults(raw: Profile): Profile {
   const p = { ...raw, settings: { ...DEFAULT_SETTINGS, ...raw.settings }, history: raw.history ?? [] };
   // parties sauvegardées avant l'ajout d'un réglage : on le reporte dans la partie
   if (p.game) p.game.options = { ...p.game.options, ...gameOptions(p.settings) };

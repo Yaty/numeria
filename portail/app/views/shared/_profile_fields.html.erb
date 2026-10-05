@@ -1,0 +1,8 @@
+<label>Prénom ou pseudonyme <%= f.text_field :name, required: true, maxlength: 40 %></label>
+<label>Année de naissance (facultatif) <%= f.number_field :birth_year, min: 2000, max: Date.current.year, placeholder: (Date.current.year - 7).to_s %></label>
+<fieldset class="avatar-pick">
+  <legend>Avatar</legend>
+  <% Profile::AVATARS.each do |a| %>
+    <label><%= f.radio_button :avatar, a %><span><%= a %></span></label>
+  <% end %>
+</fieldset>

@@ -1,0 +1,20 @@
+/* Numéria dans le portail : occupe la zone du jeu sous la barre du portail. */
+.numeria-root {
+  height: 100%;
+}
+.numeria-root > .screen {
+  height: 100%;
+}
+.numeria-gear {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 60;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #d7def0;
+  background: #fff;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 12px rgb(29 39 66 / 0.15);
+}

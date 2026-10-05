@@ -1,0 +1,30 @@
+<% content_for :title, "Créer un compte" %>
+<div class="card narrow">
+  <div class="tabs">
+    <%= link_to "Famille", new_inscription_path, class: ("active" unless @user.pro?) %>
+    <%= link_to "Orthophoniste", new_inscription_path(pro: 1), class: ("active" if @user.pro?) %>
+  </div>
+  <h1><%= @user.pro? ? "Accès orthophoniste" : "Compte famille" %></h1>
+  <p class="muted">
+    <% if @user.pro? %>
+      Gratuit pour les orthophonistes en exercice. Nous vérifions votre numéro RPPS (ou ADELI) dans l’annuaire santé avant d’ouvrir l’accès, en général sous 48 h. Le compte est strictement personnel.
+    <% else %>
+      6 € par an pour toute la famille, jusqu’à <%= Portail::MAX_PROFILES %> enfants. Le paiement se fait à l’étape suivante.
+    <% end %>
+  </p>
+  <%= form_with model: @user, url: inscription_path, class: "form" do |f| %>
+    <% if @user.errors.any? %>
+      <ul class="errors"><% @user.errors.full_messages.each do |m| %><li><%= m %></li><% end %></ul>
+    <% end %>
+    <%= f.hidden_field :role %>
+    <label><%= @user.pro? ? "Nom et prénom" : "Votre prénom" %> <%= f.text_field :name, required: true, autocomplete: "name", maxlength: 80 %></label>
+    <label>Adresse e-mail <%= f.email_field :email_address, required: true, autocomplete: "email" %></label>
+    <% if @user.pro? %>
+      <label>Numéro RPPS (11 chiffres) ou ADELI <%= f.text_field :rpps, required: true, inputmode: "numeric", pattern: "[0-9 ]{9,14}" %></label>
+    <% end %>
+    <label>Mot de passe (10 caractères minimum) <%= f.password_field :password, required: true, minlength: 10, maxlength: 72, autocomplete: "new-password" %></label>
+    <label>Confirmation <%= f.password_field :password_confirmation, required: true, maxlength: 72, autocomplete: "new-password" %></label>
+    <label class="check"><%= check_box_tag :accept_terms, "1", false, required: true %> J’accepte les <%= link_to "conditions générales", legal_path("cgv"), target: "_blank" %> et la <%= link_to "politique de confidentialité", legal_path("confidentialite"), target: "_blank" %>.</label>
+    <%= f.submit "Créer mon compte", class: "btn primary" %>
+  <% end %>
+</div>

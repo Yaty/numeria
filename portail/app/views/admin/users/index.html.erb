@@ -1,0 +1,45 @@
+<% content_for :title, "Administration" %>
+<h1>Administration</h1>
+<section class="card">
+  <h2>Orthophonistes à vérifier (<%= @pending.size %>)</h2>
+  <% if @pending.empty? %><p class="muted">Rien à vérifier.</p><% end %>
+  <table class="table">
+    <% @pending.each do |u| %>
+      <tr>
+        <td><%= link_to u.name, admin_user_path(u) %><br><small><%= u.email_address %></small></td>
+        <td><code><%= u.rpps %></code> <%= u.rpps_checksum_ok? ? "✓ clé valide" : (u.rpps.size == 9 ? "ADELI" : "⚠️ clé invalide") %><br>
+          <%= link_to "Chercher dans l’annuaire santé ↗", "https://annuaire.sante.fr/", target: "_blank", rel: "noopener" %></td>
+        <td><%= l(u.created_at, format: :short) %></td>
+        <td class="actions">
+          <%= button_to "Valider", verify_admin_user_path(u), class: "btn small primary" %>
+          <%= button_to "Refuser", reject_admin_user_path(u), class: "btn small ghost danger" %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+</section>
+<section class="card">
+  <h2>Comptes suspendus (<%= @suspended.size %>)</h2>
+  <table class="table">
+    <% @suspended.each do |u| %>
+      <tr><td><%= link_to u.name, admin_user_path(u) %> <small><%= u.email_address %></small></td><td><%= u.suspended_reason %></td><td><%= l(u.suspended_at, format: :short) %></td></tr>
+    <% end %>
+  </table>
+</section>
+<section class="card">
+  <h2>Comptes</h2>
+  <%= form_with url: admin_root_path, method: :get, class: "form inline" do |f| %>
+    <%= f.search_field :q, value: params[:q], placeholder: "Nom ou e-mail" %> <%= f.submit "Chercher", class: "btn small" %>
+  <% end %>
+  <table class="table">
+    <thead><tr><th>Compte</th><th>Type</th><th>Accès</th><th>Créé le</th></tr></thead>
+    <% @users.each do |u| %>
+      <tr>
+        <td><%= link_to u.name, admin_user_path(u) %><br><small><%= u.email_address %></small></td>
+        <td><%= u.role %><%= " (#{u.pro_status})" if u.pro? %></td>
+        <td><%= u.can_play? ? "✅" : "—" %><%= " jusqu’au #{l(u.paid_until.to_date)}" if u.paid_until %></td>
+        <td><%= l(u.created_at.to_date) %></td>
+      </tr>
+    <% end %>
+  </table>
+</section>

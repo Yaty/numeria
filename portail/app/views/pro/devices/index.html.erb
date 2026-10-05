@@ -1,0 +1,22 @@
+<% content_for :title, "Appareils" %>
+<h1>Appareils connectés</h1>
+<div class="card">
+  <p class="muted">Votre compte est personnel : <%= current_user.max_sessions %> appareils au plus restent connectés (une nouvelle connexion déconnecte le plus ancien), et chaque session expire au bout de <%= Portail::PRO_SESSION_TTL.in_hours.to_i %> h. Des connexions depuis trop d’endroits différents suspendent le compte.</p>
+  <ul class="row-list">
+    <% @sessions.each do |s| %>
+      <li>
+        💻 <strong><%= s.device_label %></strong>
+        <small class="muted">depuis le <%= l(s.created_at, format: :short) %> · <%= s.ip_address %></small>
+        <% if s == Current.session %>
+          <span class="pill ok push">cet appareil</span>
+        <% else %>
+          <%= button_to "Déconnecter", pro_device_path(s), method: :delete, class: "btn small ghost push" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</div>
+<div class="card">
+  <h2>Journal des connexions</h2>
+  <%= render "shared/events", events: @events %>
+</div>

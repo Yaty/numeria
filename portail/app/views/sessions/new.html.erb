@@ -1,0 +1,10 @@
+<% content_for :title, "Connexion" %>
+<div class="card narrow">
+  <h1>Connexion</h1>
+  <%= form_with url: session_path, class: "form" do |form| %>
+    <label>Adresse e-mail <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", value: params[:email_address] %></label>
+    <label>Mot de passe <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72 %></label>
+    <%= form.submit "Se connecter", class: "btn primary" %>
+  <% end %>
+  <p><%= link_to "Mot de passe oublié ?", new_password_path %> · <%= link_to "Créer un compte", new_inscription_path %></p>
+</div>

@@ -1,0 +1,13 @@
+node_modules
+dist
+.git
+portail/log/*
+!portail/log/.keep
+portail/tmp/*
+!portail/tmp/.keep
+portail/storage/*
+!portail/storage/.keep
+portail/public/jeux
+portail/config/master.key
+docs
+tests

@@ -1,0 +1,30 @@
+<% content_for :title, "Espace parent" %>
+<h1>Espace parent</h1>
+<div class="grid-2">
+  <section class="card">
+    <h2>Profils de vos enfants</h2>
+    <% if @profiles.empty? %><p class="muted">Aucun profil pour l’instant.</p><% end %>
+    <ul class="row-list">
+      <% @profiles.each do |p| %>
+        <li>
+          <span class="avatar"><%= p.avatar %></span>
+          <%= link_to p.name, parent_profile_path(p) %>
+          <% if p.therapist %><small class="pill">relié à <%= p.therapist.name %></small><% end %>
+        </li>
+      <% end %>
+    </ul>
+    <%= link_to "▶ Aller jouer", jouer_path, class: "btn primary" if @profiles.any? %>
+  </section>
+  <section class="card">
+    <h2>Nouveau profil</h2>
+    <% if @profiles.size >= Portail::MAX_PROFILES %>
+      <p class="muted"><%= Portail::MAX_PROFILES %> profils au maximum.</p>
+    <% else %>
+      <%= form_with model: @profile, url: parent_profiles_path, class: "form" do |f| %>
+        <% if @profile.errors.any? %><ul class="errors"><% @profile.errors.full_messages.each do |m| %><li><%= m %></li><% end %></ul><% end %>
+        <%= render "shared/profile_fields", f: %>
+        <%= f.submit "Créer le profil", class: "btn primary" %>
+      <% end %>
+    <% end %>
+  </section>
+</div>

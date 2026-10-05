@@ -1,0 +1,22 @@
+lea:
+  user: famille
+  name: Léa
+  avatar: "🦊"
+  birth_year: 2018
+
+tom:
+  user: famille
+  name: Tom
+  avatar: "🐻"
+
+patient:
+  user: pro
+  therapist: pro
+  name: Patient A
+  avatar: "🐸"
+
+patient_autre:
+  user: pro2
+  therapist: pro2
+  name: Patient B
+  avatar: "🐼"

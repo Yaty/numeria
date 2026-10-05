@@ -1,0 +1,45 @@
+<% pw = BCrypt::Password.create("motdepasse-test") %>
+
+famille:
+  name: Camille
+  email_address: famille@example.com
+  password_digest: <%= pw %>
+  role: famille
+  paid_until: <%= 6.months.from_now.to_fs(:db) %>
+
+famille_expiree:
+  name: Dominique
+  email_address: expiree@example.com
+  password_digest: <%= pw %>
+  role: famille
+  paid_until: <%= 1.day.ago.to_fs(:db) %>
+
+pro:
+  name: Erell Ortho
+  email_address: ortho@example.com
+  password_digest: <%= pw %>
+  role: pro
+  pro_status: verifie
+  rpps: "10101010101"
+
+pro2:
+  name: Autre Ortho
+  email_address: ortho2@example.com
+  password_digest: <%= pw %>
+  role: pro
+  pro_status: verifie
+  rpps: "10202020202"
+
+pro_attente:
+  name: Nouvelle Ortho
+  email_address: attente@example.com
+  password_digest: <%= pw %>
+  role: pro
+  pro_status: en_attente
+  rpps: "10303030303"
+
+admin:
+  name: Admin
+  email_address: admin@example.com
+  password_digest: <%= pw %>
+  role: admin

@@ -1,0 +1,104 @@
+/* Mots collés : lettres collées et séparations à placer. */
+.quiz-answers.mots-colles {
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.mots-colles-line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 10px;
+  max-width: 100%;
+  padding: 10px 6px;
+  border: 3px dashed var(--line);
+  border-radius: 16px;
+}
+.mots-colles-unit {
+  display: inline-flex;
+  align-items: stretch;
+}
+.mots-colles-letter {
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.3;
+  /* Largeur minimale : les zones de toucher de deux séparations voisines ne se chevauchent pas (l, i…). */
+  min-width: 0.6em;
+  text-align: center;
+  user-select: none;
+}
+.mots-colles-gap {
+  position: relative;
+  z-index: 1;
+  /* Zone de toucher large, mais qui chevauche les lettres : les lettres restent collées. */
+  width: 22px;
+  margin: 0 -8px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 6px;
+}
+.mots-colles-gap::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 15%;
+  bottom: 15%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--line);
+  opacity: 0;
+}
+@media (hover: hover) {
+  .mots-colles-gap:hover::after {
+    opacity: 1;
+  }
+}
+.mots-colles-gap.on {
+  margin: 0 4px;
+}
+.mots-colles-gap.on::after {
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  border-radius: 3px;
+  background: var(--primary);
+  opacity: 1;
+}
+.mots-colles-line.checked .mots-colles-gap.on::after {
+  background: var(--ok);
+}
+.mots-colles-line.checked .mots-colles-gap.wrong::after {
+  background: var(--bad);
+}
+.mots-colles-line.checked .mots-colles-gap.missing {
+  margin: 0 4px;
+}
+.mots-colles-line.checked .mots-colles-gap.missing::after {
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 5px dotted var(--ok);
+  background: transparent;
+  opacity: 1;
+}
+.mots-colles-line.checked .mots-colles-gap:not(.on):not(.missing)::after {
+  opacity: 0;
+}
+.mots-colles-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.mots-colles-tools .btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@media (max-width: 600px) {
+  .mots-colles-letter { font-size: 1.55rem; }
+  .mots-colles-gap { width: 18px; margin: 0 -6px; }
+  .mots-colles-gap.on,
+  .mots-colles-line.checked .mots-colles-gap.missing { margin: 0 3px; }
+}

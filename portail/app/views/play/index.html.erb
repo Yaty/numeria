@@ -1,0 +1,12 @@
+<% content_for :title, "Qui joue ?" %>
+<% content_for :main_class, "page kids" %>
+<h1 class="center">Qui joue ?</h1>
+<div class="profile-grid">
+  <% @profiles.each do |p| %>
+    <%= link_to catalogue_path(p), class: "profile-card" do %>
+      <span class="avatar"><%= p.avatar %></span>
+      <strong><%= p.name %></strong>
+      <% if current_user.pro? && p.linked_to_therapist? %><small class="muted">famille reliée</small><% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,35 @@
+<% content_for :title, @profile.name %>
+<p><%= link_to "← Espace parent", parent_path %></p>
+<h1><span class="avatar"><%= @profile.avatar %></span> <%= @profile.name %></h1>
+<div class="grid-2">
+  <section class="card">
+    <h2>Orthophoniste</h2>
+    <% if @profile.therapist %>
+      <p><strong><%= @profile.therapist.name %></strong> suit <%= @profile.name %> depuis le <%= l(@profile.linked_at.to_date) %> : elle ou il voit ses résultats et peut régler les niveaux.</p>
+      <%= button_to "Retirer l’accès de l’orthophoniste", parent_profile_link_path(@profile), method: :delete, class: "btn ghost danger", form: { data: { turbo_confirm: "L’orthophoniste ne verra plus les résultats de #{@profile.name}. Continuer ?" } } %>
+    <% else %>
+      <p class="muted">Votre orthophoniste vous a donné un code de liaison ? Saisissez-le ici pour partager les résultats de <%= @profile.name %> avec elle ou lui.</p>
+      <%= form_with url: parent_profile_link_path(@profile), class: "form inline" do |f| %>
+        <%= f.text_field :code, placeholder: "ABCD2345", required: true, maxlength: 12, autocomplete: "off", class: "code-input", "aria-label": "Code de liaison" %>
+        <%= f.submit "Relier", class: "btn primary" %>
+      <% end %>
+    <% end %>
+  </section>
+  <section class="card">
+    <h2>Profil</h2>
+    <%= form_with model: @profile, url: parent_profile_path(@profile), method: :patch, class: "form" do |f| %>
+      <%= render "shared/profile_fields", f: %>
+      <%= f.submit "Enregistrer", class: "btn primary" %>
+    <% end %>
+    <%= button_to "Supprimer ce profil", parent_profile_path(@profile), method: :delete, class: "btn ghost danger", form: { data: { turbo_confirm: "Supprimer #{@profile.name} et tous ses résultats ?" } } %>
+  </section>
+</div>
+<section class="card">
+  <h2>Résultats</h2>
+  <%= render "shared/stats", summary: @summary, recent: @recent %>
+</section>
+<section class="card">
+  <h2>Niveaux</h2>
+  <p class="muted">Par défaut, le niveau s’adapte tout seul aux réussites. Vous pouvez en imposer un.</p>
+  <%= render "shared/game_settings", profile: @profile, url: parent_profile_settings_path(@profile) %>
+</section>

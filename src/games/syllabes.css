@@ -1,0 +1,90 @@
+/* Le train des syllabes : tambour et trains de wagons. */
+.syllabes-area {
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.syllabes-tap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.syllabes-drum {
+  border: 3px solid var(--line);
+  background: #fff7e6;
+  border-radius: 50%;
+  width: 96px;
+  height: 96px;
+  font-size: 3.2rem;
+  line-height: 1;
+}
+.syllabes-drum.hit {
+  animation: syllabes-hit 0.18s;
+}
+@keyframes syllabes-hit {
+  50% {
+    transform: scale(0.88);
+  }
+}
+.syllabes-tapside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.syllabes-dots {
+  display: flex;
+  gap: 8px;
+  min-height: 22px;
+}
+.syllabes-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f2a33a;
+}
+.quiz .btn.syllabes-reset {
+  font-size: 0.95rem;
+  padding: 8px 14px;
+}
+
+.syllabes-trains {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  max-width: 460px;
+}
+.quiz-choice.syllabes-train {
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 60px;
+  padding: 8px 18px;
+}
+.syllabes-wagons {
+  font-size: 1.9rem;
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: -0.12em;
+}
+.syllabes-train .quiz-choice-label {
+  font-size: 1.6rem;
+  min-width: 1.2em;
+}
+.syllabes-trains.done .syllabes-train:not(.right):not(.wrong) {
+  opacity: 0.5;
+}
+
+@media (max-width: 480px) {
+  .syllabes-wagons {
+    font-size: 1.5rem;
+  }
+  .syllabes-drum {
+    width: 80px;
+    height: 80px;
+    font-size: 2.6rem;
+  }
+}

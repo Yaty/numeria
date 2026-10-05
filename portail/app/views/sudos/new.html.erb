@@ -1,0 +1,10 @@
+<% content_for :title, "Confirmer" %>
+<div class="card narrow">
+  <h1>🔒 Espace adulte</h1>
+  <p class="muted">Pour continuer, ressaisissez votre mot de passe.</p>
+  <%= form_with url: sudo_path, class: "form" do |f| %>
+    <label>Mot de passe <%= f.password_field :password, required: true, autofocus: true, autocomplete: "current-password" %></label>
+    <%= f.submit "Continuer", class: "btn primary" %>
+  <% end %>
+  <% if current_user.famille? %><p><%= link_to "← Retour aux jeux", jouer_path %></p><% end %>
+</div>

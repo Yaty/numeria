@@ -1,0 +1,4 @@
+<p>Bonjour <%= @user.name %>,</p>
+<p>Pour choisir un nouveau mot de passe, ouvrez <%= link_to "cette page", edit_password_url(@user.password_reset_token) %>.
+Le lien expire dans <%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>.</p>
+<p>Si vous n’avez rien demandé, ignorez cet e-mail.</p>

@@ -1,0 +1,52 @@
+<% content_for :title, @patient.name %>
+<p><%= link_to "← Mes patients", pro_root_path %></p>
+<div class="pro-head">
+  <h1><span class="avatar"><%= @patient.avatar %></span> <%= @patient.name %> <% if @patient.age %><small class="muted"><%= @patient.age %> ans</small><% end %></h1>
+  <%= link_to "▶ Jouer en séance", catalogue_path(@patient), class: "btn primary" %>
+</div>
+<div class="grid-2">
+  <section class="card">
+    <h2>Famille</h2>
+    <% if @patient.linked_to_therapist? %>
+      <p>✅ Profil relié au compte famille de <strong><%= @patient.user.name %></strong> : les parties faites à la maison apparaissent ici.</p>
+    <% elsif @patient.link_code.present? && @patient.link_code_expires_at&.future? %>
+      <p>Code de liaison à donner à la famille (valable jusqu’au <%= l(@patient.link_code_expires_at.to_date) %>) :</p>
+      <p class="link-code"><%= @patient.link_code %></p>
+      <p class="muted small">La famille le saisit dans <em>Espace parent → profil de l’enfant</em>. L’historique fait en séance rejoint alors son profil.</p>
+    <% else %>
+      <p class="muted">Si la famille est abonnée, reliez son profil pour suivre le travail fait à la maison.</p>
+      <%= button_to "Créer un code de liaison", link_code_pro_patient_path(@patient), class: "btn ghost" %>
+    <% end %>
+  </section>
+  <section class="card">
+    <h2>Niveaux</h2>
+    <%= render "shared/game_settings", profile: @patient, url: game_settings_pro_patient_path(@patient) %>
+  </section>
+</div>
+<section class="card">
+  <h2>Résultats</h2>
+  <%= render "shared/stats", summary: @summary, recent: @recent %>
+  <% if @by_level.any? %>
+    <h3>Par niveau et par lieu</h3>
+    <table class="table compact">
+      <thead><tr><th>Jeu</th><th>Niveau</th><th>Lieu</th><th>Essais</th><th>Réussite</th></tr></thead>
+      <tbody>
+        <% @by_level.sort_by { |slug, level, mode, _, _| [ slug, level.to_s, mode ] }.each do |slug, level, mode, n, ok| %>
+          <tr><td><%= game_title(slug) %></td><td><%= level %></td><td><%= mode == "seance" ? "séance" : "maison" %></td><td><%= n %></td><td><%= rate_badge((100.0 * ok / n).round) %></td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</section>
+<section class="card">
+  <% if @patient.owned_by_therapist? %>
+    <h2>Modifier</h2>
+    <%= form_with model: @patient, url: pro_patient_path(@patient), method: :patch, class: "form" do |f| %>
+      <%= render "shared/profile_fields", f: %>
+      <%= f.submit "Enregistrer", class: "btn primary" %>
+    <% end %>
+    <%= button_to "Supprimer ce patient", pro_patient_path(@patient), method: :delete, class: "btn ghost danger", form: { data: { turbo_confirm: "Supprimer #{@patient.name} et tous ses résultats ?" } } %>
+  <% else %>
+    <%= button_to "Ne plus suivre ce profil", pro_patient_path(@patient), method: :delete, class: "btn ghost danger", form: { data: { turbo_confirm: "Vous n’aurez plus accès aux résultats de #{@patient.name}. Continuer ?" } } %>
+  <% end %>
+</section>

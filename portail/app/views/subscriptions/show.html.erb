@@ -1,0 +1,20 @@
+<% content_for :title, "Abonnement" %>
+<div class="card narrow">
+  <h1>Abonnement famille</h1>
+  <% if current_user.subscribed? %>
+    <p class="status ok">✅ Actif jusqu’au <strong><%= l(current_user.paid_until.to_date, format: :long) %></strong><%= " — renouvellement automatique" if current_user.subscription_status == "active" %>.</p>
+    <%= link_to "▶ Jouer", jouer_path, class: "btn primary" %>
+    <% if current_user.stripe_customer_id.present? %>
+      <%= button_to "Gérer ou résilier l’abonnement", abonnement_gerer_path, class: "btn ghost", data: { turbo: false } %>
+    <% end %>
+  <% else %>
+    <p>Pour <strong><%= number_to_currency(Portail::PRICE_CENTS / 100.0, unit: "€", format: "%n %u") %> par an</strong>, toute la famille accède à tous les jeux, jusqu’à <%= Portail::MAX_PROFILES %> enfants.</p>
+    <% if current_user.paid_until %><p class="status warn">Votre abonnement a pris fin le <%= l(current_user.paid_until.to_date, format: :long) %>.</p><% end %>
+    <% if Portail.stripe_configured? %>
+      <%= button_to "Payer 6 € par carte (paiement sécurisé Stripe)", abonnement_paiement_path, class: "btn primary big", data: { turbo: false } %>
+      <p class="muted small">Résiliable à tout moment. Vous serez redirigé·e vers Stripe puis revenez ici.</p>
+    <% else %>
+      <p class="status warn">Le paiement en ligne n’est pas encore ouvert. Contactez-nous pour activer votre accès.</p>
+    <% end %>
+  <% end %>
+</div>

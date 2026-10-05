@@ -1,0 +1,65 @@
+<% content_for :main_class, "landing" %>
+<section class="hero">
+  <div class="hero-text">
+    <h1>Des jeux d’orthophonie pour progresser à la maison… et en séance.</h1>
+    <p class="lead">Sons, lecture, orthographe, vocabulaire, compréhension, mémoire, nombres : <%= Game.all.size %> jeux conçus pour l’orthophonie, avec une voix naturelle et des niveaux qui s’adaptent à l’enfant.</p>
+    <div class="hero-actions">
+      <%= link_to "Abonner ma famille — 6 €/an", new_inscription_path, class: "btn primary big" %>
+      <%= link_to "Je suis orthophoniste", new_inscription_path(pro: 1), class: "btn ghost big" %>
+    </div>
+  </div>
+  <div class="hero-art" aria-hidden="true">🦉<span>👂</span><span>📖</span><span>🔢</span></div>
+</section>
+
+<section class="section">
+  <h2>Les jeux</h2>
+  <div class="category-grid">
+    <% @categories.each do |category, games| %>
+      <article class="category-card">
+        <h3><span class="cat-emoji"><%= category.emoji %></span> <%= category.name %></h3>
+        <p class="muted"><%= category.description %></p>
+        <ul class="game-list">
+          <% games.each do |g| %>
+            <li><span class="game-emoji"><%= g.emoji %></span> <strong><%= g.title %></strong> <span class="muted">· <%= g.ages %></span><br><small><%= g.description %></small></li>
+          <% end %>
+        </ul>
+      </article>
+    <% end %>
+  </div>
+</section>
+
+<section class="section pricing">
+  <h2>Tarifs</h2>
+  <div class="price-grid">
+    <article class="price-card featured">
+      <h3>Famille</h3>
+      <p class="price"><%= number_to_currency(Portail::PRICE_CENTS / 100.0, unit: "€", format: "%n %u", precision: 0) %> <small>/ an</small></p>
+      <ul>
+        <li>Tous les jeux, sur tous vos appareils</li>
+        <li>Jusqu’à <%= Portail::MAX_PROFILES %> enfants</li>
+        <li>Suivi partagé avec l’orthophoniste (si vous le souhaitez)</li>
+        <li>Sans engagement : résiliable en un clic</li>
+      </ul>
+      <%= link_to "Créer mon compte", new_inscription_path, class: "btn primary" %>
+    </article>
+    <article class="price-card">
+      <h3>Orthophoniste</h3>
+      <p class="price">Gratuit <small>après vérification</small></p>
+      <ul>
+        <li>Patients illimités, jeux en séance</li>
+        <li>Statistiques détaillées par jeu et par niveau</li>
+        <li>Réglage des niveaux pour la maison</li>
+        <li>Compte nominatif et protégé (numéro RPPS vérifié)</li>
+      </ul>
+      <%= link_to "Demander un accès pro", new_inscription_path(pro: 1), class: "btn ghost" %>
+    </article>
+  </div>
+</section>
+
+<section class="section faq">
+  <h2>Questions fréquentes</h2>
+  <details><summary>À partir de quel âge ?</summary><p>Les jeux couvrent de 4 à 12 ans environ ; chacun a trois niveaux et s’adapte aux réussites de l’enfant.</p></details>
+  <details><summary>Est-ce que ça remplace l’orthophoniste ?</summary><p>Non. Ces jeux prolongent le travail fait en séance. Seul·e un·e orthophoniste peut poser un bilan et mener une rééducation.</p></details>
+  <details><summary>Quelles données sont conservées ?</summary><p>Un prénom ou pseudonyme, une année de naissance facultative et les résultats aux jeux. Rien n’est revendu ni utilisé pour de la publicité. Voir la <%= link_to "politique de confidentialité", legal_path("confidentialite") %>.</p></details>
+  <details><summary>Comment relier mon enfant à son orthophoniste ?</summary><p>L’orthophoniste vous donne un code de liaison ; saisissez-le dans l’espace parent, sur le profil de votre enfant. Vous pouvez retirer la liaison à tout moment.</p></details>
+</section>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <title><%= [content_for(:title), Portail::NAME].compact.join(" · ") %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Jeux d’orthophonie en ligne pour les enfants : conscience phonologique, lecture, orthographe, vocabulaire, compréhension, mémoire et mathématiques.">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="<%= content_for(:body_class) %>" <% if content_for?(:body_style) %>style="<%= yield :body_style %>"<% end %>>
+    <header class="site-header">
+      <%= link_to (authenticated? ? home_path_for(current_user) : root_path), class: "brand" do %>
+        <span class="brand-logo">🦉</span> <%= Portail::NAME %>
+      <% end %>
+      <nav class="site-nav">
+        <% if authenticated? %>
+          <% if current_user.famille? %>
+            <%= link_to "Jouer", jouer_path %>
+            <%= link_to "Espace parent", parent_path %>
+            <%= link_to "Abonnement", abonnement_path %>
+          <% elsif current_user.pro? %>
+            <%= link_to "Mes patients", pro_root_path %>
+            <%= link_to "Appareils", pro_devices_path %>
+          <% elsif current_user.admin? %>
+            <%= link_to "Administration", admin_root_path %>
+          <% end %>
+          <%= button_to "Se déconnecter", session_path, method: :delete, class: "link-button" %>
+        <% else %>
+          <%= link_to "Se connecter", new_session_path %>
+          <%= link_to "Créer un compte", new_inscription_path, class: "btn small primary" %>
+        <% end %>
+      </nav>
+    </header>
+    <% if notice.present? %><p class="flash notice" role="status"><%= notice %></p><% end %>
+    <% if alert.present? %><p class="flash alert" role="alert"><%= alert %></p><% end %>
+    <main class="<%= content_for(:main_class) || 'page' %>">
+      <%= yield %>
+    </main>
+    <footer class="site-footer">
+      <span>© <%= Date.current.year %> <%= Portail::NAME %></span>
+      <%= link_to "Mentions légales", legal_path("mentions-legales") %>
+      <%= link_to "Conditions générales", legal_path("cgv") %>
+      <%= link_to "Confidentialité", legal_path("confidentialite") %>
+    </footer>
+  </body>
+</html>

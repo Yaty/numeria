@@ -1,0 +1,32 @@
+<% content_for :title, "Mes patients" %>
+<div class="pro-head">
+  <h1>Mes patients</h1>
+  <span class="pill private">🔒 Compte personnel de <%= current_user.name %> — ne pas partager</span>
+</div>
+<div class="grid-2">
+  <section class="card">
+    <% if @patients.empty? %>
+      <p class="muted">Aucun patient. Créez un patient pour jouer en séance, puis donnez le code de liaison à sa famille si elle est abonnée.</p>
+    <% end %>
+    <ul class="row-list">
+      <% @patients.each do |p| %>
+        <li>
+          <span class="avatar"><%= p.avatar %></span>
+          <%= link_to p.name, pro_patient_path(p) %>
+          <% if p.age %><small class="muted"><%= p.age %> ans</small><% end %>
+          <small class="pill <%= p.linked_to_therapist? ? 'ok' : '' %>"><%= p.linked_to_therapist? ? "famille reliée" : "séance uniquement" %></small>
+          <%= link_to "▶ Séance", catalogue_path(p), class: "btn small primary push" %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+  <section class="card">
+    <h2>Nouveau patient</h2>
+    <p class="muted small">Utilisez un prénom ou un pseudonyme : aucune donnée médicale ni nom de famille.</p>
+    <%= form_with model: @patient, url: pro_patients_path, class: "form" do |f| %>
+      <% if @patient.errors.any? %><ul class="errors"><% @patient.errors.full_messages.each do |m| %><li><%= m %></li><% end %></ul><% end %>
+      <%= render "shared/profile_fields", f: %>
+      <%= f.submit "Créer", class: "btn primary" %>
+    <% end %>
+  </section>
+</div>

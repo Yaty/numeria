@@ -1,0 +1,159 @@
+# Catalogue des jeux. Les fiches des nouveaux jeux sont complétées d'après les comptes rendus de conception.
+categories:
+  - { slug: phonologie, name: "Conscience phonologique", emoji: "👂", description: "Syllabes, rimes et sons : entendre et manipuler les sons de la langue." }
+  - { slug: ecrit, name: "Langage écrit", emoji: "📖", description: "Lire vite et bien, repérer les mots dans la phrase." }
+  - { slug: orthographe, name: "Orthographe", emoji: "✏️", description: "Choisir la bonne orthographe selon le sens." }
+  - { slug: lexique, name: "Lexique et sémantique", emoji: "🧩", description: "Le sens des mots et leurs liens." }
+  - { slug: syntaxe, name: "Morphosyntaxe et compréhension", emoji: "🗣️", description: "Construire et comprendre des phrases." }
+  - { slug: memoire, name: "Mémoire et attention", emoji: "🧠", description: "Retenir et redire." }
+  - { slug: maths, name: "Logico-mathématiques", emoji: "🔢", description: "Nombres, quantités, calcul et raisonnement." }
+
+games:
+  - slug: numeria
+    title: "Numéria"
+    emoji: "🏭"
+    category: maths
+    ages: "6-12 ans"
+    description: "Un monde de nombres à construire : on produit, on échange 10 contre 1, on ouvre les milliers… et on résout des enquêtes."
+    objectives:
+      - "Numération décimale de position (rangs et classes), échanges 10 → 1"
+      - "Transcodage entre les trois codes (arabe, verbal, analogique) — modèle du triple code de Dehaene"
+      - "Résolution de problèmes (méthode de Singapour) : + −, × ÷, proportionnalité, fonctions, puissances"
+    levels: ["Classe des unités", "Grands nombres", "Grands nombres et décimaux"]
+  - slug: intrus
+    title: "L’intrus"
+    emoji: "🕵️"
+    category: lexique
+    ages: "4-9 ans"
+    description: "Trois images vont ensemble, une n’est pas de la même famille : trouve l’intrus."
+    objectives:
+      - "Catégorisation sémantique (catégories éloignées puis proches)"
+      - "Accès lexical et dénomination"
+      - "Passage de l’image au mot écrit (niveau 3)"
+    levels: ["Familles très différentes", "Familles proches", "Mots écrits"]
+  - slug: lecture-flash
+    title: "Lecture flash"
+    emoji: "⚡"
+    category: ecrit
+    ages: "6-9 ans"
+    description: "Un mot écrit apparaît très vite : touche l’image qui correspond, parmi des mots qui se ressemblent."
+    objectives:
+      - "Décodage rapide (voie d’assemblage) puis reconnaissance par voie d’adressage"
+      - "Maîtrise des graphèmes complexes (ou, on, an, oi, ch, gn, eau ; c/g doux, s entre voyelles)"
+      - "Discrimination visuelle fine entre mots proches (attaque, rime, lettres miroirs b/d/p)"
+      - "Constitution du lexique orthographique (mots irréguliers)"
+    levels: ["Mots simples (1,5 s)", "Graphèmes complexes (0,9 s)", "Mots irréguliers et longs (0,5 s)"]
+  - slug: mots-colles
+    title: "Mots collés"
+    emoji: "✂️"
+    category: ecrit
+    ages: "6-10 ans"
+    description: "Les mots de la phrase sont collés : touche entre les lettres pour les séparer."
+    objectives:
+      - "Segmentation lexicale à l’écrit, notion de mot graphique"
+      - "Repérage des mots grammaticaux élidés (l’, j’, s’, n’, m’)"
+      - "Segmentations homophones (ils ont / il sont, mon oncle)"
+      - "Mots composés et mots-unités (aujourd’hui, grand-mère)"
+    levels: ["3 mots courts", "4 à 6 mots, élisions", "Phrases longues, pièges"]
+  - slug: homophones
+    title: "Les homophones"
+    emoji: "✏️"
+    category: orthographe
+    ages: "7-11 ans"
+    description: "Complète la phrase avec le mot bien écrit parmi des mots qui se prononcent pareil."
+    objectives:
+      - "Orthographe grammaticale des homophones"
+      - "Stratégie de substitution (a→avait, est→était, on→il, son→mon…)"
+      - "Accords en genre et en nombre (quel/quelle, leur/leurs)"
+      - "Distinction pronom / déterminant"
+    levels: ["a/à, et/est", "on/ont, son/sont, ou/où, ces/ses", "c’est/s’est, ce/se, leur(s), quel(le)/qu’elle, mes/mais/met"]
+  - slug: syllabes
+    title: "Le train des syllabes"
+    emoji: "🚂"
+    category: phonologie
+    ages: "5-8 ans"
+    description: "Écoute le mot, tape sur le tambour pour chaque syllabe, puis choisis le train qui a autant de wagons."
+    objectives:
+      - "Segmentation syllabique orale"
+      - "Dénombrement des syllabes ; e muet final non compté (pomme = 1, tomate = 2)"
+      - "Traitement des mots longs (polysyllabes)"
+    levels: ["1 à 2 syllabes", "1 à 3 syllabes", "2 à 4 syllabes"]
+  - slug: rimes
+    title: "Rimes en folie"
+    emoji: "🎵"
+    category: phonologie
+    ages: "5-8 ans"
+    description: "Trouve l’image dont le nom rime avec le mot entendu."
+    objectives:
+      - "Identification de la rime phonologique (dernière voyelle et ce qui suit)"
+      - "Distinction rime / attaque commune"
+      - "Rimes de graphies différentes (chapeau / vélo)"
+    levels: ["Rimes de même graphie, distracteurs éloignés", "Distracteurs de même attaque ou même voyelle", "Rimes de graphies différentes"]
+  - slug: son-cache
+    title: "Le son caché"
+    emoji: "👂"
+    category: phonologie
+    ages: "5-8 ans"
+    description: "Entends-tu le son dans le mot ? Quel mot commence par ce son ? Où l’entends-tu : au début, au milieu ou à la fin ?"
+    objectives:
+      - "Identification phonémique (présence / absence)"
+      - "Isolement du phonème initial"
+      - "Localisation du phonème (début, milieu, fin)"
+      - "Discrimination de phonèmes proches (s/ch/j, f/v, m/n)"
+    levels: ["Entends-tu le son ? (consonnes continues, voyelles)", "Quel mot commence par… ? (+ occlusives)", "Début, milieu ou fin ?"]
+  - slug: contraires
+    title: "Contraires et synonymes"
+    emoji: "↔️"
+    category: lexique
+    ages: "5-10 ans"
+    description: "Un mot est montré et lu : trouve son contraire, ou un mot qui veut dire presque la même chose."
+    objectives:
+      - "Relations sémantiques d’antonymie et de synonymie"
+      - "Organisation et précision du lexique (adjectifs, verbes, adverbes)"
+      - "Morphologie dérivationnelle : préfixes négatifs (in-, im-, dé-…)"
+    levels: ["Contraires d’adjectifs concrets", "Verbes, adverbes, préfixes", "Synonymes nuancés"]
+  - slug: phrases
+    title: "Phrases en désordre"
+    emoji: "🧱"
+    category: syntaxe
+    ages: "6-10 ans"
+    description: "Les mots d’une phrase sont mélangés : remets-les dans le bon ordre."
+    objectives:
+      - "Ordre canonique des constituants (sujet-verbe-complément)"
+      - "Place de l’adjectif, du déterminant et de la négation"
+      - "Structures complexes : subordonnées, relatives, pronoms clitiques, interrogatives"
+    levels: ["3 à 4 mots", "5 à 7 mots", "7 à 10 mots"]
+  - slug: qui-fait-quoi
+    title: "Qui fait quoi ?"
+    emoji: "🐶"
+    category: syntaxe
+    ages: "5-10 ans"
+    description: "Écoute la phrase et trouve quel animal fait l’action… ou la subit."
+    objectives:
+      - "Compréhension des rôles thématiques (agent / patient) en phrases réversibles"
+      - "Phrases non canoniques : passives, clivées, relatives enchâssées"
+      - "Négation et ordre temporel (avant de, après avoir)"
+    levels: ["Phrases actives", "Passives et clivées", "Relatives, négation, ordre temporel"]
+  - slug: memoire
+    title: "La mémoire des mots"
+    emoji: "🧠"
+    category: memoire
+    ages: "4-9 ans"
+    description: "Écoute une suite de mots sans les voir, puis touche les images dans le même ordre."
+    objectives:
+      - "Empan auditivo-verbal endroit (rappel sériel par reconnaissance d’images, sans production orale)"
+      - "Attention auditive soutenue, maintien de l’ordre sériel"
+      - "Effet de similarité phonologique (boucle phonologique)"
+      - "Empan envers (mémoire de travail avec manipulation)"
+    levels: ["Empan 2 à 3, mots courts", "Empan 3 à 4", "Empan 4 à 5 (mots qui riment) ou à l’envers"]
+  - slug: combien
+    title: "Combien ?"
+    emoji: "🎲"
+    category: maths
+    ages: "4-9 ans"
+    description: "Reconnaître des quantités d’un coup d’œil, comparer des collections et placer des nombres sur une ligne."
+    objectives:
+      - "Subitizing (1 à 5) et reconnaissance de configurations canoniques (dé, doigts, boîte de dix)"
+      - "Système numérique approximatif : comparaison de collections avec inhibition de l’indice de taille"
+      - "Ligne numérique mentale ; comparaison de nombres à deux chiffres (valeur positionnelle)"
+    levels: ["Subitizing 1 à 5", "Configurations 4 à 10, comparaison de collections", "Ligne numérique, comparaison de nombres"]

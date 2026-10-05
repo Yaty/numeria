@@ -1,0 +1,10 @@
+<% content_for :title, "Vérification en cours" %>
+<div class="card narrow">
+  <% if current_user.pro_status == "refuse" %>
+    <h1>Inscription refusée</h1>
+    <p>Nous n’avons pas pu vérifier le numéro <strong><%= current_user.rpps %></strong> dans l’annuaire santé. Si c’est une erreur, écrivez-nous.</p>
+  <% else %>
+    <h1>⏳ Vérification en cours</h1>
+    <p>Merci <%= current_user.name %> ! Nous vérifions votre numéro <strong><%= current_user.rpps %></strong> dans l’annuaire santé. L’accès s’ouvre dès que c’est fait, en général sous 48 h.</p>
+  <% end %>
+</div>

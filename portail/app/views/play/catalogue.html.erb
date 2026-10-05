@@ -1,0 +1,21 @@
+<% content_for :title, "Jeux" %>
+<% content_for :main_class, "page kids" %>
+<div class="catalogue-head">
+  <span class="avatar big"><%= @profile.avatar %></span>
+  <h1>À quoi on joue, <%= @profile.name %> ?</h1>
+  <%= link_to "Changer de joueur", jouer_path, class: "btn ghost small" %>
+</div>
+<% @categories.each do |category, games| %>
+  <section class="catalogue-section">
+    <h2><%= category.emoji %> <%= category.name %></h2>
+    <div class="game-grid">
+      <% games.each do |g| %>
+        <%= link_to jeu_path(@profile, g.slug), class: "game-card" do %>
+          <span class="game-card-emoji"><%= g.emoji %></span>
+          <strong><%= g.title %></strong>
+          <small><%= g.description %></small>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+<% end %>

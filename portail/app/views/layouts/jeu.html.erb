@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <title><%= @game.title %> · <%= Portail::NAME %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    <meta name="robots" content="noindex">
+    <%= csrf_meta_tags %>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <%= stylesheet_link_tag "jeu" %>
+    <%= jeux_bundle_tags %>
+  </head>
+  <body class="jeu-page">
+    <%= yield %>
+  </body>
+</html>

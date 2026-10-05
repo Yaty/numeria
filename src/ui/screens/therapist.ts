@@ -19,7 +19,8 @@ const MODE_LABELS: Record<string, string> = {
 };
 const CODE_LABELS: Record<Code, string> = { arabe: 'Chiffres (arabe)', verbal: 'Lettres (verbal)', analogique: 'Blocs (analogique)' };
 
-export function showTherapist(root: HTMLElement, onExit: () => void): void {
+/** `only` : dans le portail, un seul profil, sans code (l'accès adulte est vérifié par le serveur). */
+export function showTherapist(root: HTMLElement, onExit: () => void, only?: Profile): void {
   const askPin = (title: string, onPin: (pin: string) => void, error = '') => {
     const pad = keypad((v) => {
       if (v >= 10000) return askPin(title, onPin, 'Le code fait 4 chiffres.');
@@ -39,7 +40,9 @@ export function showTherapist(root: HTMLElement, onExit: () => void): void {
     );
   };
 
-  if (store.pin === null) {
+  if (only) {
+    panel(only.id);
+  } else if (store.pin === null) {
     askPin('Choisissez un code à 4 chiffres pour protéger cet espace.', (pin) => {
       store.pin = pin;
       save();
@@ -52,7 +55,8 @@ export function showTherapist(root: HTMLElement, onExit: () => void): void {
   }
 
   function panel(selectedId?: string) {
-    const selected = store.profiles.find((p) => p.id === selectedId);
+    const profiles = only ? [only] : store.profiles;
+    const selected = profiles.find((p) => p.id === selectedId);
     const importInput = h('input', { type: 'file', accept: '.json,application/json', hidden: true });
     importInput.addEventListener('change', async () => {
       const file = importInput.files?.[0];
@@ -79,11 +83,11 @@ export function showTherapist(root: HTMLElement, onExit: () => void): void {
           'div',
           { class: 'therapist-head' },
           h('button', { class: 'btn ghost', type: 'button', onclick: onExit }, '← Retour au jeu'),
-          h('h1', {}, 'Espace orthophoniste'),
-          h('button', { class: 'btn ghost', type: 'button', onclick: () => importInput.click() }, '📥 Importer un profil'),
+          h('h1', {}, only ? `Réglages de Numéria — ${only.name}` : 'Espace orthophoniste'),
+          only ? null : h('button', { class: 'btn ghost', type: 'button', onclick: () => importInput.click() }, '📥 Importer un profil'),
           importInput,
         ),
-        h(
+        only ? null : h(
           'nav',
           { class: 'patient-tabs' },
           store.profiles.length === 0 ? h('p', { class: 'muted' }, 'Aucun patient pour l’instant. Créez un joueur depuis l’accueil.') : null,
@@ -93,7 +97,7 @@ export function showTherapist(root: HTMLElement, onExit: () => void): void {
         ),
         selected ? patientPanel(selected) : null,
         voiceSection(),
-        h(
+        only ? null : h(
           'details',
           { class: 'card' },
           h('summary', {}, 'Changer le code d’accès'),
@@ -208,8 +212,8 @@ export function showTherapist(root: HTMLElement, onExit: () => void): void {
           save();
           panel(p.id);
         } }, '♻️ Recommencer la partie'),
-        h('button', { class: 'btn ghost', type: 'button', onclick: () => download(p) }, '📤 Exporter (cabinet ↔ maison)'),
-        h('button', { class: 'btn danger', type: 'button', onclick: () => {
+        only ? null : h('button', { class: 'btn ghost', type: 'button', onclick: () => download(p) }, '📤 Exporter (cabinet ↔ maison)'),
+        only ? null : h('button', { class: 'btn danger', type: 'button', onclick: () => {
           if (!confirm(`Supprimer définitivement le profil de ${p.name} ?`)) return;
           store.profiles = store.profiles.filter((x) => x.id !== p.id);
           save();

@@ -1,0 +1,29 @@
+<% content_for :title, @user.name %>
+<p><%= link_to "← Administration", admin_root_path %></p>
+<h1><%= @user.name %> <small class="muted"><%= @user.email_address %></small></h1>
+<div class="grid-2">
+  <section class="card">
+    <p>Type : <strong><%= @user.role %></strong><%= " — #{@user.pro_status}" if @user.pro? %></p>
+    <% if @user.pro? %><p>RPPS/ADELI : <code><%= @user.rpps %></code> <%= @user.rpps_checksum_ok? ? "✓" : "" %></p><% end %>
+    <p>Accès aux jeux : <%= @user.can_play? ? "oui" : "non" %><%= ", payé jusqu’au #{l(@user.paid_until.to_date)}" if @user.paid_until %> <%= "(Stripe : #{@user.subscription_status})" if @user.subscription_status %></p>
+    <p>Profils : <%= @user.profiles.count %><%= " · patients suivis : #{@user.patients.count}" if @user.pro? %></p>
+    <p>Sur 24 h : <%= @detector.logins %> connexions depuis <%= @detector.distinct_ips %> adresses IP (seuils : <%= Portail::SHARING_MAX_LOGINS %> / <%= Portail::SHARING_MAX_IPS %>).</p>
+    <% if @user.suspended? %><p class="status warn">Suspendu le <%= l(@user.suspended_at, format: :short) %> : <%= @user.suspended_reason %></p><% end %>
+  </section>
+  <section class="card actions-col">
+    <% if @user.pro? && @user.pro_status != "verifie" && !@user.suspended? %><%= button_to "Valider l’orthophoniste", verify_admin_user_path(@user), class: "btn primary" %><% end %>
+    <% if @user.famille? %><%= button_to "Offrir / prolonger un an d’accès", grant_admin_user_path(@user), class: "btn ghost" %><% end %>
+    <% if @user.suspended? %>
+      <%= button_to "Réactiver le compte", reinstate_admin_user_path(@user), class: "btn primary" %>
+    <% elsif !@user.admin? %>
+      <%= form_with url: suspend_admin_user_path(@user), class: "form" do |f| %>
+        <%= f.text_field :reason, placeholder: "Motif de la suspension" %>
+        <%= f.submit "Suspendre", class: "btn ghost danger" %>
+      <% end %>
+    <% end %>
+  </section>
+</div>
+<section class="card">
+  <h2>Journal des connexions</h2>
+  <%= render "shared/events", events: @events %>
+</section>
