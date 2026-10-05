@@ -12,6 +12,9 @@ npm test         # tests du moteur (numération, échanges, problèmes, profils)
 npm run build    # version statique dans dist/
 ```
 
+En ligne : **https://yaty.github.io/numeria/** — pour publier une nouvelle version :
+`npm run deploy` (teste, compile, puis publie sur la branche `gh-pages`).
+
 Le dossier `dist/` est un site statique : il peut être déposé sur n'importe quel
 hébergement (Netlify, GitHub Pages, serveur du cabinet…) et ouvert sur tablette.
 Les données restent dans le navigateur de l'appareil ; pour passer du cabinet à la
