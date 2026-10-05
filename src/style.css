@@ -357,6 +357,23 @@ h3 {
   text-overflow: ellipsis;
 }
 
+.voice-btn {
+  position: relative;
+}
+
+.voice-badge {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 999px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
 .btn.detective {
   background: #fff6dc;
   border: 2px solid #f0d27a;

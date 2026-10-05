@@ -7,6 +7,7 @@ import { showGame } from './ui/screens/game';
 import { showHome } from './ui/screens/home';
 import { showPlacement } from './ui/screens/placement';
 import { showTherapist } from './ui/screens/therapist';
+import { prepareVoice } from './ui/speech';
 
 function home(): void {
   showHome(root, { open, therapist: () => showTherapist(root, home) });
@@ -18,3 +19,5 @@ function open(p: Profile): void {
 }
 
 home();
+// la voix neuronale se télécharge en arrière-plan dès l'ouverture
+prepareVoice();

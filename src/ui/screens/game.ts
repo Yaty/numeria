@@ -12,7 +12,7 @@ import { blockStack, CLASS_COLORS, words } from '../codes';
 import { h } from '../dom';
 import { openModal } from '../modal';
 import { openProblem, tripleCode } from '../problemView';
-import { setVoiceEnabled, speak } from '../speech';
+import { onVoiceStatus, setVoiceEnabled, speak, voiceStatus, type VoiceStatus } from '../speech';
 
 /** Taille d'une zone (classe) en unités de dessin, et rapport de taille entre deux classes. */
 const ZW = 1000;
@@ -45,6 +45,13 @@ export function showGame(root: HTMLElement, profile: Profile, onExit: () => void
   let lastTotal = -1;
 
   // ---------- Bandeau : codes arabe et verbal ----------
+  const voiceBadge = h('span', { class: 'voice-badge' });
+  const showVoice = (st: VoiceStatus) => {
+    voiceBadge.hidden = !s.voice || st.state !== 'downloading';
+    voiceBadge.textContent = st.state === 'downloading' ? `${st.percent} %` : '';
+  };
+  showVoice(voiceStatus());
+  const stopVoiceWatch = onVoiceStatus(showVoice);
   const bannerArabe = h('div', { class: 'banner-arabe' });
   const bannerWords = h('div', { class: 'banner-words' });
   const detectiveBtn = h('button', { class: 'btn detective', type: 'button', onclick: () => investigate() }, '🕵️ Enquête');
@@ -56,8 +63,9 @@ export function showGame(root: HTMLElement, profile: Profile, onExit: () => void
     h('div', { class: 'banner' }, bannerArabe, bannerWords),
     h(
       'button',
-      { class: 'btn icon', type: 'button', 'aria-label': 'écouter le nombre', onclick: () => speak(words(E.totalValue(g), 'traditionnelle')) },
+      { class: 'btn icon voice-btn', type: 'button', 'aria-label': 'écouter le nombre', onclick: () => speak(words(E.totalValue(g), 'traditionnelle')) },
       '🔊',
+      voiceBadge,
     ),
     detectiveBtn,
   );
@@ -442,6 +450,7 @@ export function showGame(root: HTMLElement, profile: Profile, onExit: () => void
   document.addEventListener('visibilitychange', onHide);
 
   function exit() {
+    stopVoiceWatch();
     cancelAnimationFrame(raf);
     clearInterval(saveTimer);
     window.removeEventListener('resize', onResize);

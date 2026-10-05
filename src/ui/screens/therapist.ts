@@ -10,7 +10,7 @@ import { applySettings, exportProfile, importProfile, newGameFor, statsByKind, t
 import { save, store } from '../app';
 import { h } from '../dom';
 import { keypad } from '../keypad';
-import { chosenVoiceURI, frenchVoices, isVoiceAvailable, setChosenVoice, speak } from '../speech';
+import { chosenVoice, NEURAL_VOICES, onVoiceStatus, setChosenVoice, speak, systemFrenchVoices, voiceStatus, type VoiceStatus } from '../speech';
 
 const MODE_LABELS: Record<string, string> = {
   clavier: 'chiffres (clavier)',
@@ -222,42 +222,54 @@ export function showTherapist(root: HTMLElement, onExit: () => void): void {
   }
 }
 
-/** Choix de la voix de lecture : propre à l'appareil (les voix disponibles en dépendent). */
+/** Choix de la voix de lecture : propre à l'appareil. */
 function voiceSection(): HTMLElement {
-  const card = h('section', { class: 'card' }, h('h2', {}, '🔊 Voix (cet appareil)'));
-  if (!isVoiceAvailable()) {
-    card.append(h('p', { class: 'muted' }, 'Ce navigateur ne sait pas lire à voix haute.'));
-    return card;
-  }
-  const fill = () => {
-    const list = frenchVoices();
-    const chosen = chosenVoiceURI();
-    const select = h(
-      'select',
-      { class: 'input' },
-      h('option', { value: '', selected: !chosen }, `Automatique${list[0] ? ` (${list[0].name})` : ''}`),
-      list.map((v) => h('option', { value: v.voiceURI, selected: v.voiceURI === chosen }, `${v.name} — ${v.lang}`)),
-    );
-    select.addEventListener('change', () => {
-      setChosenVoice(select.value || null);
-      speak('Bonjour ! Deux mille vingt-quatre.', true);
-    });
-    card.replaceChildren(
-      h('h2', {}, '🔊 Voix (cet appareil)'),
-      h(
-        'div',
-        { class: 'row wrap' },
-        select,
-        h('button', { class: 'btn ghost', type: 'button', onclick: () => speak('Bonjour ! Deux mille vingt-quatre.', true) }, '▶ Écouter'),
-      ),
-      list.length === 0
-        ? h('p', { class: 'muted' }, 'Aucune voix française trouvée sur cet appareil.')
-        : h('p', { class: 'muted' }, 'Astuce : les voix « Google », « Natural » (Edge) ou « Amélie / Thomas » (Apple) sont les plus naturelles.'),
-    );
+  const sample = 'Bonjour ! Deux mille vingt-quatre. Dix centaines, c’est une unité de mille.';
+  const statusLine = h('p', { class: 'muted' });
+  const showStatus = (st: VoiceStatus) => {
+    statusLine.textContent = {
+      idle: '',
+      downloading: `Téléchargement de la voix : ${st.state === 'downloading' ? st.percent : 0} % (une seule fois, ~60 Mo)`,
+      ready: '✓ Voix prête, elle fonctionne hors ligne.',
+      error: `La voix n’a pas pu être téléchargée (${st.state === 'error' ? st.message : ''}). Vérifiez la connexion internet.`,
+    }[st.state];
   };
-  fill();
-  window.speechSynthesis.addEventListener('voiceschanged', fill, { once: true });
-  return card;
+  showStatus(voiceStatus());
+  const unsubscribe = onVoiceStatus((st) => {
+    if (!statusLine.isConnected) return unsubscribe();
+    showStatus(st);
+  });
+
+  const chosen = chosenVoice();
+  const select = h(
+    'select',
+    { class: 'input' },
+    h(
+      'optgroup',
+      { label: 'Voix naturelles (recommandées)' },
+      NEURAL_VOICES.map((v) => h('option', { value: `piper:${v.id}`, selected: chosen === `piper:${v.id}` }, v.label)),
+    ),
+    systemFrenchVoices().length
+      ? h(
+          'optgroup',
+          { label: 'Voix de l’appareil' },
+          systemFrenchVoices().map((v) =>
+            h('option', { value: `system:${v.voiceURI}`, selected: chosen === `system:${v.voiceURI}` }, `${v.name} — ${v.lang}`),
+          ),
+        )
+      : null,
+  );
+  select.addEventListener('change', () => {
+    setChosenVoice(select.value);
+    speak(sample, true);
+  });
+  return h(
+    'section',
+    { class: 'card' },
+    h('h2', {}, '🔊 Voix (cet appareil)'),
+    h('div', { class: 'row wrap' }, select, h('button', { class: 'btn ghost', type: 'button', onclick: () => speak(sample, true) }, '▶ Écouter')),
+    statusLine,
+  );
 }
 
 function levelText(l: ProblemLevel): string {
