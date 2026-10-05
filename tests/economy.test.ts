@@ -107,6 +107,15 @@ describe('échanges', () => {
 });
 
 describe('usines', () => {
+  it('par défaut, une usine produit un élément toutes les 3 secondes', () => {
+    const g = newGame(1);
+    produce(g, 0, 10);
+    buildFactory(g, 0);
+    tick(g, 2.9);
+    expect(g.counts[0]).toBe(0);
+    tick(g, 0.2);
+    expect(g.counts[0]).toBe(1);
+  });
   it('aux unités, seule l’usine à unités existe ; dès les milliers elles se diversifient', () => {
     const g = newGame(1);
     expect(availableFactoryRanks(g)).toEqual([0]);
@@ -130,8 +139,8 @@ describe('usines', () => {
     expect(g.counts[1]).toBe(1);
     expect(g.counts[0]).toBe(0);
   });
-  it('une usine produit un élément de son rang par seconde', () => {
-    const g = newGame(1);
+  it('une usine produit au rythme réglé', () => {
+    const g = newGame(1, { factoryRate: 1 });
     produce(g, 0, 10);
     buildFactory(g, 0);
     tick(g, 3.5);
@@ -140,7 +149,7 @@ describe('usines', () => {
     expect(g.counts[0]).toBe(4);
   });
   it('une usine en panne ne produit plus ; réparée elle produit double pendant 30 s', () => {
-    const g = newGame(1);
+    const g = newGame(1, { factoryRate: 1 });
     produce(g, 0, 10);
     buildFactory(g, 0);
     g.factories[0].broken = true;

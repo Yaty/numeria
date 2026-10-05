@@ -1,7 +1,7 @@
 /**
  * Profils patients, réglages de l'orthophoniste, historique et sauvegarde locale.
  */
-import { newGame, type ExchangeMode, type GameState, type UniverseLevel } from './economy';
+import { FACTORY_SPEEDS, newGame, type ExchangeMode, type GameState, type UniverseLevel } from './economy';
 import type { Orthographe } from './french';
 import type { AnswerMode, Code, ProblemKind, ProblemLevel } from './problems';
 
@@ -10,6 +10,7 @@ export interface Settings {
   level: ProblemLevel;
   exchangeMode: ExchangeMode;
   breakdownInterval: number;
+  factorySpeed: keyof typeof FACTORY_SPEEDS;
   codes: Code[];
   voice: boolean;
   orthographe: Orthographe;
@@ -56,6 +57,7 @@ export const DEFAULT_SETTINGS: Settings = {
   level: 'A',
   exchangeMode: 'progressive',
   breakdownInterval: 45,
+  factorySpeed: 'normale',
   codes: ['arabe', 'verbal', 'analogique'],
   voice: true,
   orthographe: 'rectifiee',
@@ -79,7 +81,11 @@ export function createProfile(name: string, avatar: string): Profile {
 }
 
 function gameOptions(s: Settings) {
-  return { exchangeMode: s.exchangeMode, breakdownInterval: s.breakdownInterval };
+  return {
+    exchangeMode: s.exchangeMode,
+    breakdownInterval: s.breakdownInterval,
+    factoryRate: FACTORY_SPEEDS[s.factorySpeed],
+  };
 }
 
 export function newGameFor(s: Settings): GameState {
@@ -115,7 +121,10 @@ export function statsByKind(p: Profile): Partial<Record<ProblemKind, { attempts:
 }
 
 function withDefaults(raw: Profile): Profile {
-  return { ...raw, settings: { ...DEFAULT_SETTINGS, ...raw.settings }, history: raw.history ?? [] };
+  const p = { ...raw, settings: { ...DEFAULT_SETTINGS, ...raw.settings }, history: raw.history ?? [] };
+  // parties sauvegardées avant l'ajout d'un réglage : on le reporte dans la partie
+  if (p.game) p.game.options = { ...p.game.options, ...gameOptions(p.settings) };
+  return p;
 }
 
 export function loadStore(storage: KeyValueStorage): Store {

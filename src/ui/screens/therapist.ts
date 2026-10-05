@@ -6,10 +6,11 @@ import { className } from '../../core/numbers';
 import type { ExchangeMode, UniverseLevel } from '../../core/economy';
 import type { Orthographe } from '../../core/french';
 import { KIND_LABELS, PROBLEM_LEVELS, type Code, type ProblemKind, type ProblemLevel } from '../../core/problems';
-import { applySettings, exportProfile, importProfile, newGameFor, statsByKind, type Profile } from '../../core/profile';
+import { applySettings, exportProfile, importProfile, newGameFor, statsByKind, type Profile, type Settings } from '../../core/profile';
 import { save, store } from '../app';
 import { h } from '../dom';
 import { keypad } from '../keypad';
+import { chosenVoiceURI, frenchVoices, isVoiceAvailable, setChosenVoice, speak } from '../speech';
 
 const MODE_LABELS: Record<string, string> = {
   clavier: 'chiffres (clavier)',
@@ -91,6 +92,7 @@ export function showTherapist(root: HTMLElement, onExit: () => void): void {
           ),
         ),
         selected ? patientPanel(selected) : null,
+        voiceSection(),
         h(
           'details',
           { class: 'card' },
@@ -167,6 +169,11 @@ export function showTherapist(root: HTMLElement, onExit: () => void): void {
           [45, 'normales (45 s)'],
           [90, 'rares (90 s)'],
         ], (v) => set({ breakdownInterval: v })),
+        select<Settings['factorySpeed']>('Vitesse des usines', s.factorySpeed, [
+          ['lente', 'lente (1 élément toutes les 5 s)'],
+          ['normale', 'normale (1 élément toutes les 3 s)'],
+          ['rapide', 'rapide (1 élément par seconde)'],
+        ], (v) => set({ factorySpeed: v })),
         select<Orthographe>('Orthographe des nombres', s.orthographe, [
           ['rectifiee', 'rectifiée 1990 (vingt-et-un, deux-cents)'],
           ['traditionnelle', 'traditionnelle (vingt et un, deux cents)'],
@@ -213,6 +220,44 @@ export function showTherapist(root: HTMLElement, onExit: () => void): void {
 
     return h('div', { class: 'patient' }, settings, progress, statsSection(p));
   }
+}
+
+/** Choix de la voix de lecture : propre à l'appareil (les voix disponibles en dépendent). */
+function voiceSection(): HTMLElement {
+  const card = h('section', { class: 'card' }, h('h2', {}, '🔊 Voix (cet appareil)'));
+  if (!isVoiceAvailable()) {
+    card.append(h('p', { class: 'muted' }, 'Ce navigateur ne sait pas lire à voix haute.'));
+    return card;
+  }
+  const fill = () => {
+    const list = frenchVoices();
+    const chosen = chosenVoiceURI();
+    const select = h(
+      'select',
+      { class: 'input' },
+      h('option', { value: '', selected: !chosen }, `Automatique${list[0] ? ` (${list[0].name})` : ''}`),
+      list.map((v) => h('option', { value: v.voiceURI, selected: v.voiceURI === chosen }, `${v.name} — ${v.lang}`)),
+    );
+    select.addEventListener('change', () => {
+      setChosenVoice(select.value || null);
+      speak('Bonjour ! Deux mille vingt-quatre.', true);
+    });
+    card.replaceChildren(
+      h('h2', {}, '🔊 Voix (cet appareil)'),
+      h(
+        'div',
+        { class: 'row wrap' },
+        select,
+        h('button', { class: 'btn ghost', type: 'button', onclick: () => speak('Bonjour ! Deux mille vingt-quatre.', true) }, '▶ Écouter'),
+      ),
+      list.length === 0
+        ? h('p', { class: 'muted' }, 'Aucune voix française trouvée sur cet appareil.')
+        : h('p', { class: 'muted' }, 'Astuce : les voix « Google », « Natural » (Edge) ou « Amélie / Thomas » (Apple) sont les plus naturelles.'),
+    );
+  };
+  fill();
+  window.speechSynthesis.addEventListener('voiceschanged', fill, { once: true });
+  return card;
 }
 
 function levelText(l: ProblemLevel): string {

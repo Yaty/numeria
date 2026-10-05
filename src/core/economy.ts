@@ -7,7 +7,7 @@ import { MAX_RANK, classOf, fromMilli, milliValue, toMilli } from './numbers';
 
 export const CAPACITY = 19;
 export const MANUAL_EXCHANGES_FOR_MACHINE = 10;
-const FACTORY_COST_GROWTH = 1.25;
+const FACTORY_COST_GROWTH = 1.35;
 const BOOST_SECONDS = 30;
 
 export type UniverseLevel = 1 | 2 | 3;
@@ -18,7 +18,11 @@ export interface GameOptions {
   exchangeMode: ExchangeMode;
   /** Secondes entre deux pannes (0 = jamais). */
   breakdownInterval: number;
+  /** Éléments produits par seconde par une usine. */
+  factoryRate: number;
 }
+
+export const FACTORY_SPEEDS = { lente: 0.2, normale: 1 / 3, rapide: 1 } as const;
 
 export interface Factory {
   id: string;
@@ -48,7 +52,11 @@ export type GameEvent =
   | { type: 'classOpened'; cls: number }
   | { type: 'breakdown'; factoryId: string };
 
-export const DEFAULT_OPTIONS: GameOptions = { exchangeMode: 'progressive', breakdownInterval: 45 };
+export const DEFAULT_OPTIONS: GameOptions = {
+  exchangeMode: 'progressive',
+  breakdownInterval: 45,
+  factoryRate: FACTORY_SPEEDS.normale,
+};
 
 export function newGame(level: UniverseLevel, options: Partial<GameOptions> = {}): GameState {
   const opts = { ...DEFAULT_OPTIONS, ...options };
@@ -205,7 +213,7 @@ export function tick(g: GameState, dt: number, rng: () => number = Math.random):
 
   for (const f of g.factories) {
     if (f.broken) continue;
-    const rate = f.boostUntil > g.time ? 2 : 1;
+    const rate = (g.options.factoryRate ?? DEFAULT_OPTIONS.factoryRate) * (f.boostUntil > g.time ? 2 : 1);
     const p = (g.progress[f.id] ?? 0) + rate * dt;
     const made = Math.floor(p);
     g.progress[f.id] = p - made;
