@@ -5,7 +5,12 @@ class PlayController < ApplicationController
 
   def index
     @profiles = Current.user.visible_profiles.order(:name)
-    redirect_to(Current.user.pro? ? pro_root_path : parent_path, notice: "Créez d’abord un profil.") if @profiles.empty?
+    return unless @profiles.empty?
+    case Current.user.role
+    when "pro" then redirect_to pro_root_path, notice: "Créez d’abord un patient."
+    when "famille" then redirect_to parent_path, notice: "Créez d’abord un profil."
+    else redirect_to admin_root_path
+    end
   end
 
   def catalogue

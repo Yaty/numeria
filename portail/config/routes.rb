@@ -26,6 +26,10 @@ Rails.application.routes.draw do
     post :attempts, as: :exercice_attempts
   end
 
+  # Changer son mot de passe (connecté)
+  get "mot-de-passe" => "account_passwords#edit", as: :mot_de_passe
+  patch "mot-de-passe" => "account_passwords#update"
+
   # Voix de lecture du compte (orthophoniste ou parent)
   get "voix" => "voices#edit", as: :voix
   patch "voix" => "voices#update"

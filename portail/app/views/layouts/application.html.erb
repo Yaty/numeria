@@ -32,6 +32,7 @@
           <% elsif current_user.admin? %>
             <%= link_to "Administration", admin_root_path %>
           <% end %>
+          <%= link_to "Mot de passe", mot_de_passe_path %>
           <%= button_to "Se déconnecter", session_path, method: :delete, class: "link-button" %>
         <% else %>
           <%= link_to "Se connecter", new_session_path %>
