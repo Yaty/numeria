@@ -35,6 +35,16 @@ Le mot de passe est `motdepasse-demo`.
   - `npm test` (jeux, moteur Numéria) ;
   - `cd portail && bin/rails test` (comptes, garde-fous, Stripe, API).
 
+## En ligne (POC)
+
+https://6d8e9ca0-38f3-4381-9624-9f1bbeb3df76.pub.instances.scw.cloud — instance Scaleway STARDUST1-S à Varsovie
+(`pl-waw-2`, projet « Ludortho »), **hors HDS** : bandeau « version de test », patients fictifs uniquement.
+
+- Mettre à jour : `cd portail && bin/deployer` (Kamal ; secrets dans `portail/.env.production`, non versionné,
+  modèle `.env.production.exemple`).
+- Sauvegarde quotidienne de la base sur le serveur : `/root/sauvegardes` (14 jours, cron 3 h 30).
+- Console Rails : `bin/deployer console` · journaux : `bin/deployer logs`.
+
 ## Mise en production
 
 Image Docker à la racine (`docker build -t ludortho .`). Elle compile les jeux puis Rails.
