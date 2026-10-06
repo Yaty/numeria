@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Déploie le portail : charge .env.production puis lance Kamal.
+#   bin/deployer setup   (première fois : installe Docker, le proxy et l'application)
+#   bin/deployer         (mises à jour)
+set -euo pipefail
+cd "$(dirname "$0")/.."
+if [ ! -f .env.production ]; then
+  echo "Créez portail/.env.production (voir .env.production.exemple)." >&2
+  exit 1
+fi
+set -a; source .env.production; set +a
+exec bin/kamal "${1:-deploy}" "${@:2}"

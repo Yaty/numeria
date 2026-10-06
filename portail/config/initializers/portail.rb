@@ -14,6 +14,8 @@ module Portail
   SHARING_MAX_IPS = ENV.fetch("PARTAGE_MAX_IP", 4).to_i
   SHARING_MAX_LOGINS = ENV.fetch("PARTAGE_MAX_CONNEXIONS", 12).to_i
   LINK_CODE_TTL = 7.days
+  # Version de test sur un hébergement non certifié HDS : pas de vraies données de patients
+  POC = ENV.fetch("PORTAIL_POC", Rails.env.production? ? "1" : "0") == "1"
 
   def self.stripe_configured?
     Stripe.api_key.present?

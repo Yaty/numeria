@@ -117,4 +117,21 @@ class SafeguardsTest < ActionDispatch::IntegrationTest
     delete pro_device_path(other)
     assert_not Session.exists?(other.id)
   end
+
+  test "version de test (hors HDS) : bandeau dans l'espace orthophoniste" do
+    sign_in_as users(:pro)
+    with_poc(true) { get pro_root_path; assert_match "patients fictifs", response.body }
+    with_poc(false) { get pro_root_path; assert_no_match "patients fictifs", response.body }
+  end
+
+  private
+    def with_poc(value)
+      old = Portail::POC
+      Portail.send(:remove_const, :POC)
+      Portail.const_set(:POC, value)
+      yield
+    ensure
+      Portail.send(:remove_const, :POC)
+      Portail.const_set(:POC, old)
+    end
 end

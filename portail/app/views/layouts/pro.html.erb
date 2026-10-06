@@ -1,3 +1,8 @@
 <% content_for :body_class, "pro" %>
 <% content_for :body_style, watermark_style(current_user) %>
+<% if Portail::POC %>
+  <% content_for :banner do %>
+    <p class="poc-banner" role="note">🧪 <strong>Version de test</strong> — l’hébergement n’est pas encore certifié pour les données de santé (HDS) : utilisez uniquement des patients fictifs, sans vrai prénom ni vraie date de naissance.</p>
+  <% end %>
+<% end %>
 <%= render template: "layouts/application" %>
