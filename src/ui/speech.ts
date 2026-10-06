@@ -1,10 +1,10 @@
 /**
  * Lecture à voix haute (code verbal oral).
  *
- * Par défaut : une voix neuronale (Piper) calculée dans le navigateur. Elle est
- * téléchargée une fois (~60 Mo), puis gardée sur l'appareil et fonctionne hors
- * ligne. Les voix du système restent disponibles (utiles sur iPad / Mac, où
- * elles sont bonnes), mais sous Linux ou Android elles sont souvent robotiques.
+ * Uniquement des voix neuronales (Piper) calculées dans le navigateur : elles sont
+ * téléchargées une fois (~60 Mo), gardées sur l'appareil et fonctionnent hors
+ * ligne. Les voix du système (souvent robotiques) ne sont jamais utilisées : tant
+ * que la voix n'est pas prête, rien n'est lu.
  */
 import type { VoiceId } from '@diffusionstudio/vits-web';
 
@@ -15,7 +15,7 @@ export const NEURAL_VOICES: { id: VoiceId; label: string }[] = [
   { id: 'fr_FR-tom-medium', label: 'Tom — voix d’homme' },
   { id: 'fr_FR-upmc-medium', label: 'UPMC — voix de femme' },
 ];
-const DEFAULT_VOICE = `piper:${NEURAL_VOICES[0].id}`;
+export const DEFAULT_VOICE: VoiceId = NEURAL_VOICES[0].id;
 
 export type VoiceStatus =
   | { state: 'idle' }
@@ -24,56 +24,50 @@ export type VoiceStatus =
   | { state: 'error'; message: string };
 
 let enabled = true;
-let systemVoices: SpeechSynthesisVoice[] = [];
 let status: VoiceStatus = { state: 'idle' };
 let statusVoice: VoiceId | null = null;
 const listeners = new Set<(s: VoiceStatus) => void>();
 const cache = new Map<string, Promise<string>>();
 let playing: HTMLAudioElement | null = null;
 let token = 0;
+/** Voix imposée pour cette page quand le stockage local est indisponible. */
+let forced: VoiceId | null = null;
 
 type Tts = typeof import('@diffusionstudio/vits-web');
 let ttsModule: Promise<Tts> | null = null;
 const tts = () => (ttsModule ??= import('@diffusionstudio/vits-web'));
 
 export function isVoiceAvailable(): boolean {
-  return 'speechSynthesis' in window || 'Audio' in window;
+  return 'Audio' in window;
 }
 
-function refreshSystemVoices(): void {
-  if (!('speechSynthesis' in window)) return;
-  systemVoices = window.speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith('fr'));
+export function isNeuralVoice(id: string): id is VoiceId {
+  return NEURAL_VOICES.some((v) => v.id === id);
 }
 
-if ('speechSynthesis' in window) {
-  refreshSystemVoices();
-  window.speechSynthesis.addEventListener('voiceschanged', refreshSystemVoices);
-}
-
-export function systemFrenchVoices(): SpeechSynthesisVoice[] {
-  return systemVoices;
-}
-
-export function chosenVoice(): string {
+/** Voix choisie sur cet appareil (les anciens réglages « système » reviennent à la voix par défaut). */
+export function chosenVoice(): VoiceId {
   try {
-    return localStorage.getItem(VOICE_KEY) ?? DEFAULT_VOICE;
+    const raw = (localStorage.getItem(VOICE_KEY) ?? '').replace(/^piper:/, '');
+    return isNeuralVoice(raw) ? raw : DEFAULT_VOICE;
   } catch {
     return DEFAULT_VOICE;
   }
 }
 
 export function setChosenVoice(choice: string): void {
+  const id = choice.replace(/^piper:/, '');
+  if (!isNeuralVoice(id)) return;
   try {
-    localStorage.setItem(VOICE_KEY, choice);
+    localStorage.setItem(VOICE_KEY, id);
   } catch {
-    /* stockage indisponible : on garde la voix par défaut */
+    /* stockage indisponible : la voix reste choisie pour cette page */
+    forced = id;
   }
   prepareVoice();
 }
 
-function neuralId(choice = chosenVoice()): VoiceId | null {
-  return choice.startsWith('piper:') ? (choice.slice(6) as VoiceId) : null;
-}
+const currentVoice = (): VoiceId => forced ?? chosenVoice();
 
 export function voiceStatus(): VoiceStatus {
   return status;
@@ -91,10 +85,9 @@ function setStatus(s: VoiceStatus): void {
 
 let preparing: Promise<void> | null = null;
 
-/** Télécharge la voix neuronale choisie si besoin (en arrière-plan). */
+/** Télécharge la voix choisie si besoin (en arrière-plan). */
 export function prepareVoice(): Promise<void> {
-  const id = neuralId();
-  if (!id) return Promise.resolve();
+  const id = currentVoice();
   if (statusVoice === id && (status.state === 'ready' || preparing)) return preparing ?? Promise.resolve();
   statusVoice = id;
   preparing = (async () => {
@@ -134,27 +127,10 @@ function neuralAudio(id: VoiceId, text: string): Promise<string> {
   return url;
 }
 
-function speakSystem(text: string): void {
-  if (!('speechSynthesis' in window)) return;
-  const synth = window.speechSynthesis;
-  synth.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'fr-FR';
-  u.rate = 0.95;
-  const choice = chosenVoice();
-  const voice = systemVoices.find((v) => `system:${v.voiceURI}` === choice) ?? systemVoices[0];
-  if (voice) {
-    u.voice = voice;
-    u.lang = voice.lang;
-  }
-  synth.speak(u);
-}
-
 export function stopSpeaking(): void {
   token++;
   playing?.pause();
   playing = null;
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
 }
 
 export function setVoiceEnabled(on: boolean): void {
@@ -164,17 +140,16 @@ export function setVoiceEnabled(on: boolean): void {
 }
 
 /**
- * Lit un texte. Avec la voix neuronale encore en téléchargement, on ne lit rien
- * (plutôt qu'une voix robotique) : l'interface affiche la progression.
+ * Lit un texte avec la voix neuronale. Tant qu'elle se télécharge (ou si le
+ * téléchargement a échoué), on ne lit rien plutôt qu'une voix robotique :
+ * l'interface affiche l'état de la voix.
  */
 export function speak(text: string, force = false): void {
   if (!enabled && !force) return;
   stopSpeaking();
-  const id = neuralId();
-  if (!id) return speakSystem(text);
-  if (status.state === 'error' && statusVoice === id) return speakSystem(text);
+  const id = currentVoice();
   if (status.state !== 'ready' || statusVoice !== id) {
-    prepareVoice();
+    if (status.state !== 'error' || statusVoice !== id) prepareVoice();
     return;
   }
   const mine = token;
@@ -184,5 +159,5 @@ export function speak(text: string, force = false): void {
       playing = new Audio(url);
       return playing.play();
     })
-    .catch(() => speakSystem(text));
+    .catch(() => undefined);
 }

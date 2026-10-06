@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_130000) do
   create_table "assignments", force: :cascade do |t|
     t.integer "profile_id", null: false
     t.integer "created_by_id", null: false
@@ -111,6 +111,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_120000) do
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"
     t.string "subscription_status"
+    t.string "voice"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["role"], name: "index_users_on_role"
     t.index ["rpps"], name: "index_users_on_rpps", unique: true

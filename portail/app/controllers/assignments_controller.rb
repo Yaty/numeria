@@ -21,7 +21,9 @@ class AssignmentsController < ApplicationController
       slug: @game.slug,
       profile: { id: @profile.id, name: @profile.name, avatar: @profile.avatar, age: @profile.age },
       mode: "maison", adult: false, state: gs.state, settings:,
-      apiBase: "/e/#{@assignment.token}", exitUrl: @back_url
+      apiBase: "/e/#{@assignment.token}", exitUrl: @back_url,
+      # l'enfant entend la voix choisie par son orthophoniste
+      voice: @assignment.created_by.voice
     }
     render "play/game", layout: "jeu"
   end

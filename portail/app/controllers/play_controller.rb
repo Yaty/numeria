@@ -23,7 +23,8 @@ class PlayController < ApplicationController
       state: gs.state,
       settings: gs.settings || {},
       apiBase: "/api/profils/#{@profile.id}/jeux/#{@game.slug}",
-      exitUrl: catalogue_path(@profile)
+      exitUrl: catalogue_path(@profile),
+      voice: Current.user.voice
     }
     render layout: "jeu"
   end

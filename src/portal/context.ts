@@ -15,6 +15,8 @@ export interface PortalConfig {
   /** URL de base : POST {base}/state, {base}/settings, {base}/attempts */
   apiBase: string;
   exitUrl: string;
+  /** Voix neuronale choisie par le compte (null : voix par défaut de l'appareil). */
+  voice?: string | null;
 }
 
 function csrf(): string {

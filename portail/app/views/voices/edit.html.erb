@@ -1,0 +1,15 @@
+<% content_for :title, "Voix" %>
+<div class="card narrow">
+  <h1>🔊 Voix de lecture</h1>
+  <p class="muted">Les consignes et les mots sont lus par une voix naturelle, calculée dans le navigateur. Elle se télécharge une fois par appareil (environ 60 Mo), puis fonctionne hors ligne.
+    <% if current_user.pro? %>Votre choix s’applique à vos séances et aux exercices que vous envoyez.<% else %>Votre choix s’applique à tous les profils de la famille.<% end %></p>
+  <div id="voix-picker" data-config="<%= { voices: User::VOICES.map { |id, label| { id:, label: } }, current: @voice, saveUrl: voix_path }.to_json %>">
+    <%= form_with url: voix_path, method: :patch, class: "form" do |f| %>
+      <% User::VOICES.each do |id, label| %>
+        <label class="check"><%= radio_button_tag :voice, id, @voice == id %> <%= label %></label>
+      <% end %>
+      <%= f.submit "Enregistrer", class: "btn primary" %>
+    <% end %>
+  </div>
+</div>
+<% content_for :head do %><%= jeux_bundle_tags %><% end %>

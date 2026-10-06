@@ -5,9 +5,10 @@
 import '@fontsource/andika/400.css';
 import '@fontsource/andika/700.css';
 import './portal.css';
-import { prepareVoice } from '../ui/speech';
+import { prepareVoice, setChosenVoice } from '../ui/speech';
 import { portalContext, type PortalConfig } from './context';
 import { GAMES } from './registry';
+import { mountVoicePicker } from './voicePicker';
 
 const el = document.querySelector<HTMLElement>('#jeu');
 if (el) {
@@ -15,6 +16,8 @@ if (el) {
   const load = GAMES[cfg.slug];
   if (!load) el.textContent = 'Jeu introuvable.';
   else {
+    // voix choisie par le compte (ou par l'orthophoniste pour un exercice envoyé)
+    if (cfg.voice) setChosenVoice(cfg.voice);
     const ctx = portalContext(cfg);
     load().then((game) => game.mount(el, ctx));
     const flush = () => ctx.flush();
@@ -23,3 +26,6 @@ if (el) {
     prepareVoice();
   }
 }
+
+const picker = document.querySelector<HTMLElement>('#voix-picker');
+if (picker) mountVoicePicker(picker);

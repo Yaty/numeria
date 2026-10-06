@@ -26,6 +26,10 @@ Rails.application.routes.draw do
     post :attempts, as: :exercice_attempts
   end
 
+  # Voix de lecture du compte (orthophoniste ou parent)
+  get "voix" => "voices#edit", as: :voix
+  patch "voix" => "voices#update"
+
   # Espace parent
   get "parent" => "parent#index", as: :parent
   post "parent/profils" => "parent#create", as: :parent_profiles

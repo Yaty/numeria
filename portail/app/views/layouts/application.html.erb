@@ -24,9 +24,11 @@
             <%= link_to "Jouer", jouer_path %>
             <%= link_to "Espace parent", parent_path %>
             <%= link_to "Abonnement", abonnement_path %>
+            <%= link_to "Voix", voix_path %>
           <% elsif current_user.pro? %>
             <%= link_to "Mes patients", pro_root_path %>
             <%= link_to "Appareils", pro_devices_path %>
+            <%= link_to "Voix", voix_path %>
           <% elsif current_user.admin? %>
             <%= link_to "Administration", admin_root_path %>
           <% end %>

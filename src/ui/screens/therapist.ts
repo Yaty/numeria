@@ -10,7 +10,7 @@ import { applySettings, exportProfile, importProfile, newGameFor, statsByKind, t
 import { save, store } from '../app';
 import { h } from '../dom';
 import { keypad } from '../keypad';
-import { chosenVoice, NEURAL_VOICES, onVoiceStatus, setChosenVoice, speak, systemFrenchVoices, voiceStatus, type VoiceStatus } from '../speech';
+import { chosenVoice, NEURAL_VOICES, onVoiceStatus, setChosenVoice, speak, voiceStatus, type VoiceStatus } from '../speech';
 
 const MODE_LABELS: Record<string, string> = {
   clavier: 'chiffres (clavier)',
@@ -96,7 +96,7 @@ export function showTherapist(root: HTMLElement, onExit: () => void, only?: Prof
           ),
         ),
         selected ? patientPanel(selected) : null,
-        voiceSection(),
+        only ? null : voiceSection(), // dans le portail : menu « Voix » du compte
         only ? null : h(
           'details',
           { class: 'card' },
@@ -248,20 +248,7 @@ function voiceSection(): HTMLElement {
   const select = h(
     'select',
     { class: 'input' },
-    h(
-      'optgroup',
-      { label: 'Voix naturelles (recommandées)' },
-      NEURAL_VOICES.map((v) => h('option', { value: `piper:${v.id}`, selected: chosen === `piper:${v.id}` }, v.label)),
-    ),
-    systemFrenchVoices().length
-      ? h(
-          'optgroup',
-          { label: 'Voix de l’appareil' },
-          systemFrenchVoices().map((v) =>
-            h('option', { value: `system:${v.voiceURI}`, selected: chosen === `system:${v.voiceURI}` }, `${v.name} — ${v.lang}`),
-          ),
-        )
-      : null,
+    NEURAL_VOICES.map((v) => h('option', { value: v.id, selected: chosen === v.id }, v.label)),
   );
   select.addEventListener('change', () => {
     setChosenVoice(select.value);

@@ -1,5 +1,11 @@
 class User < ApplicationRecord
   ROLES = %w[famille pro admin].freeze
+  # Voix neuronales proposées (src/ui/speech.ts : NEURAL_VOICES)
+  VOICES = {
+    "fr_FR-siwis-medium" => "Siwis — voix de femme (recommandée)",
+    "fr_FR-tom-medium" => "Tom — voix d’homme",
+    "fr_FR-upmc-medium" => "UPMC — voix de femme"
+  }.freeze
   PRO_STATUSES = %w[en_attente verifie refuse suspendu].freeze
 
   has_secure_password
@@ -15,6 +21,7 @@ class User < ApplicationRecord
   validates :password, length: { minimum: 10 }, allow_nil: true
   validates :name, presence: true, length: { maximum: 80 }
   validates :role, inclusion: { in: ROLES }
+  validates :voice, inclusion: { in: VOICES.keys }, allow_nil: true
   validates :pro_status, inclusion: { in: PRO_STATUSES }, if: :pro?
   validates :rpps, presence: true, uniqueness: true, format: { with: /\A\d{11}\z/, message: "doit comporter 11 chiffres" }, if: :pro?
 
