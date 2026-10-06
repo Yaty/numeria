@@ -31,4 +31,12 @@ class ProfileTest < ActiveSupport::TestCase
     assert_nil Profile.link!(profiles(:lea), code)
     assert_nil Profile.link!(profiles(:lea), "ZZZZZZZZ")
   end
+
+  test "année de naissance : de 1900 à l'année en cours (patients adultes compris)" do
+    profile = profiles(:tom)
+    assert profile.update(birth_year: 1948)
+    assert_not profile.update(birth_year: 1899)
+    assert_not profile.update(birth_year: Date.current.year + 1)
+    assert profile.update(birth_year: nil)
+  end
 end

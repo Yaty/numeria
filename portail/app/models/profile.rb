@@ -8,7 +8,7 @@ class Profile < ApplicationRecord
 
   validates :name, presence: true, length: { maximum: 40 }
   validates :avatar, inclusion: { in: AVATARS }
-  validates :birth_year, numericality: { only_integer: true, in: 2000..2030 }, allow_nil: true
+  validates :birth_year, numericality: { only_integer: true, greater_than_or_equal_to: 1900, less_than_or_equal_to: ->(_) { Date.current.year } }, allow_nil: true
   validate :family_profile_limit, on: :create
 
   def age
