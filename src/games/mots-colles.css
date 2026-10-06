@@ -96,9 +96,23 @@
   cursor: default;
 }
 
+/* Zone de toucher : toute la largeur entre le milieu de deux lettres voisines
+   (largeur de la séparation = pas d'une lettre), et au moins 48 px de haut. */
+.mots-colles-letter {
+  line-height: 1.5;
+}
+
 @media (max-width: 600px) {
-  .mots-colles-letter { font-size: 1.55rem; }
-  .mots-colles-gap { width: 18px; margin: 0 -6px; }
+  .quiz-answers.mots-colles { gap: 12px; }
+  .mots-colles-line { padding: 6px 4px; row-gap: 4px; }
+  .mots-colles-letter { font-size: 1.75rem; min-width: 0.62em; line-height: 1.6; }
   .mots-colles-gap.on,
   .mots-colles-line.checked .mots-colles-gap.missing { margin: 0 3px; }
+  .mots-colles-tools { gap: 8px; }
+}
+
+@media (max-height: 500px) {
+  .quiz-answers.mots-colles { gap: 10px; }
+  .mots-colles-line { padding: 4px 6px; row-gap: 2px; }
+  .mots-colles-letter { line-height: 1.45; }
 }

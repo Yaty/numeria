@@ -45,7 +45,8 @@
   background: #f2a33a;
 }
 .quiz .btn.syllabes-reset {
-  font-size: 0.95rem;
+  min-height: 44px;
+  font-size: 1rem;
   padding: 8px 14px;
 }
 
@@ -78,7 +79,27 @@
   opacity: 0.5;
 }
 
-@media (max-width: 480px) {
+@media (max-height: 820px) {
+  .syllabes-area {
+    gap: 10px;
+  }
+  .syllabes-drum {
+    width: 80px;
+    height: 80px;
+    font-size: 2.6rem;
+  }
+  .syllabes-trains {
+    gap: 6px;
+  }
+  .quiz-choice.syllabes-train {
+    min-height: 50px;
+  }
+}
+
+@media (max-width: 600px) {
+  .syllabes-area {
+    gap: 10px;
+  }
   .syllabes-wagons {
     font-size: 1.5rem;
   }
@@ -86,5 +107,70 @@
     width: 80px;
     height: 80px;
     font-size: 2.6rem;
+  }
+  .syllabes-trains {
+    gap: 6px;
+  }
+  .quiz-choice.syllabes-train {
+    flex: none;
+    max-width: none;
+    min-height: 50px;
+    padding: 4px 16px;
+  }
+}
+
+/* Paysage : le tambour à gauche, les trains à droite. */
+@media (max-height: 500px) and (min-width: 560px) {
+  /* Les trains gardent leur largeur ; c'est la colonne de l'image qui rétrécit. */
+  .quiz-item:has(> .syllabes-area) {
+    grid-template-columns: minmax(0, 1fr) fit-content(400px);
+  }
+}
+@media (max-height: 500px) {
+  .syllabes-area {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  .syllabes-tap {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .syllabes-tapside {
+    align-items: center;
+    max-width: 136px;
+  }
+  .syllabes-dots {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    min-height: 18px;
+  }
+  .syllabes-dot {
+    width: 18px;
+    height: 18px;
+  }
+  .quiz .btn.syllabes-reset {
+    font-size: 0.95rem;
+    padding: 6px 10px;
+  }
+  .syllabes-drum {
+    width: 72px;
+    height: 72px;
+    font-size: 2.3rem;
+  }
+  .syllabes-trains {
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+  }
+  .quiz-choice.syllabes-train {
+    min-height: 44px;
+    padding: 0 14px;
+  }
+  .syllabes-wagons {
+    font-size: 1.25rem;
   }
 }

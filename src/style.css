@@ -724,6 +724,8 @@ h3 {
 }
 
 .btn.exch {
+  /* Hauteur tactile minimale. */
+  min-height: 40px;
   white-space: nowrap;
   font-size: 0.85rem;
   padding: 0.35em 0.5em;
@@ -864,7 +866,11 @@ h3 {
 .answer {
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  /* Résultat et « Continuer » côte à côte : le bouton garde sa hauteur. */
+  align-items: center;
+  gap: 12px;
 }
 
 .choices {
@@ -1139,6 +1145,10 @@ h3 {
   gap: 20px;
 }
 
+.placement-head .btn.small {
+  min-height: 44px;
+}
+
 .placement-head {
   width: 100%;
   max-width: 760px;
@@ -1360,5 +1370,220 @@ fieldset.field {
   }
   .avatars {
     grid-template-columns: repeat(4, 64px);
+  }
+}
+
+/* ---------- Téléphone en portrait ---------- */
+@media (max-width: 480px) {
+  .screen {
+    padding: 16px 12px;
+  }
+  .topbar {
+    gap: 6px;
+    padding: 6px 8px;
+  }
+  /* L'avatar est déjà dans la barre du portail : on laisse la place au nombre. */
+  .topbar .avatar {
+    display: none;
+  }
+  .topbar .btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.35em 0.55em;
+  }
+  .btn.detective {
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+  .banner-arabe {
+    font-size: 1.6rem;
+  }
+  .banner-words {
+    font-size: 0.9rem;
+  }
+  .overlay {
+    padding: 8px;
+  }
+  .modal {
+    padding: 14px;
+    border-radius: 18px;
+  }
+  .problem,
+  .celebrate {
+    gap: 10px;
+  }
+  .problem h2,
+  .celebrate h2 {
+    font-size: 1.3rem;
+    margin: 0;
+  }
+  .statement {
+    gap: 8px;
+    font-size: 1.15rem;
+    line-height: 1.6;
+  }
+  .statement.big {
+    font-size: 1.3rem;
+  }
+  .choices {
+    gap: 8px;
+  }
+  .choice {
+    flex: 1 1 100%;
+    min-width: 0;
+    min-height: 60px;
+  }
+  .keypad-display {
+    min-width: 0;
+    width: 100%;
+    max-width: 260px;
+  }
+  .hint-table th,
+  .hint-table td,
+  .machine-table th,
+  .machine-table td {
+    padding: 4px 8px;
+    font-size: 1rem;
+  }
+  .bars-label {
+    width: 56px;
+  }
+  .machine {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* ---------- Téléphone en paysage : actions à droite, tout est plus compact ---------- */
+@media (max-height: 500px) {
+  .screen {
+    padding: 10px 16px;
+  }
+  .screen.center {
+    gap: 8px;
+  }
+  .placement {
+    gap: 10px;
+  }
+  .statement.big {
+    font-size: 1.3rem;
+    line-height: 1.5;
+  }
+  .topbar {
+    gap: 8px;
+    padding: 4px 10px;
+  }
+  .avatar {
+    font-size: 1.5rem;
+  }
+  .topbar .btn {
+    min-height: 44px;
+    padding: 0.3em 0.6em;
+  }
+  .banner-arabe {
+    font-size: 1.5rem;
+  }
+  .banner-words {
+    font-size: 0.95rem;
+  }
+  .play {
+    grid-template-columns: 1fr minmax(170px, 30%);
+    grid-template-rows: none;
+  }
+  .side {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    border-top: 0;
+    border-left: 2px solid var(--line);
+    overflow-x: hidden;
+    overflow-y: auto;
+    align-items: stretch;
+  }
+  .btn.tap {
+    width: auto;
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 18px;
+  }
+  .tap-icon {
+    font-size: 1.8rem;
+  }
+  .shop {
+    display: block;
+  }
+  .shop-item {
+    width: 100%;
+    margin: 0 0 6px;
+  }
+  .hud {
+    gap: 6px;
+    padding: 4px 8px;
+  }
+  .hud-class-name {
+    padding: 0 8px;
+    font-size: 0.9rem;
+  }
+  .hud-col {
+    width: 66px;
+    min-height: 0;
+    gap: 2px;
+    padding: 2px 4px;
+  }
+  .hud-count {
+    font-size: 1.4rem;
+  }
+  .overlay {
+    padding: 8px;
+  }
+  .modal {
+    max-height: calc(100dvh - 16px);
+    padding: 12px 18px;
+  }
+  .problem,
+  .celebrate {
+    gap: 8px;
+  }
+  .problem h2,
+  .celebrate h2 {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+  .statement {
+    font-size: 1.15rem;
+    line-height: 1.5;
+  }
+  .choice {
+    min-width: 150px;
+    min-height: 56px;
+  }
+  /* Pavé : l'affichage et « Valider » à gauche, les touches à droite. */
+  .keypad {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas: 'display keys' 'submit keys';
+    align-items: center;
+    justify-items: center;
+    gap: 6px 16px;
+  }
+  .keypad-display {
+    grid-area: display;
+    min-width: 200px;
+    font-size: 1.7rem;
+    padding: 4px 12px;
+  }
+  .keypad-grid {
+    grid-area: keys;
+    grid-template-columns: repeat(3, 66px);
+    gap: 6px;
+  }
+  .keypad > .btn.primary {
+    grid-area: submit;
+  }
+  .key {
+    height: 48px;
+    font-size: 1.5rem;
   }
 }

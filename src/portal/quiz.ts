@@ -76,6 +76,14 @@ export function nextLevel(level: 1 | 2 | 3, score: number): 1 | 2 | 3 {
   return level;
 }
 
+/**
+ * Affichage seulement : espace insécable avant « ? ! : ; » et à l'intérieur des guillemets,
+ * pour qu'un signe ne parte jamais seul à la ligne sur un petit écran.
+ */
+export function typo(text: string): string {
+  return text.replace(/ ([?!:;»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
+}
+
 export function starsFor(score: number): number {
   return score >= 0.9 ? 3 : score >= 0.7 ? 2 : score >= 0.4 ? 1 : 0;
 }
@@ -107,6 +115,8 @@ export function quizGame(game: QuizGame): GameModule {
       function shell(...children: (Node | null)[]): HTMLElement {
         const root = h('div', { class: 'quiz' }, ...children);
         el.replaceChildren(root);
+        // Nouvel écran : on remonte en haut (la correction a pu faire défiler la zone de jeu).
+        for (let n: HTMLElement | null = el; n; n = n.parentElement) n.scrollTop = 0;
         return root;
       }
 
@@ -118,7 +128,7 @@ export function quizGame(game: QuizGame): GameModule {
             'div',
             { class: 'quiz-card quiz-intro' },
             h('h1', {}, game.title),
-            h('p', { class: 'quiz-instructions' }, game.instructions),
+            h('p', { class: 'quiz-instructions' }, typo(game.instructions)),
             h('button', { class: 'q-say', type: 'button', 'aria-label': 'Écouter la consigne', onclick: () => ctx.speak(game.instructions) }, '🔊'),
             h(
               'div',
@@ -188,10 +198,12 @@ export function quizGame(game: QuizGame): GameModule {
             const explain = item.explain ?? '';
             feedback.replaceChildren(
               h('span', { class: 'quiz-bad' }, 'Pas tout à fait…'),
-              ...(explain ? [h('p', { class: 'quiz-explain' }, explain)] : []),
+              ...(explain ? [h('p', { class: 'quiz-explain' }, typo(explain))] : []),
               h('button', { class: 'btn primary', type: 'button', onclick: () => done(false) }, 'Continuer ➜'),
             );
             ctx.speak(explain ? `Pas tout à fait. ${explain}` : 'Pas tout à fait.');
+            // Petit écran : l'explication et « Continuer » peuvent être sous la ligne de flottaison.
+            requestAnimationFrame(() => feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
           }
         };
 
@@ -223,7 +235,7 @@ export function quizGame(game: QuizGame): GameModule {
               'div',
               { class: 'quiz-stimulus' },
               item.stimulus.emoji ? h('div', { class: 'quiz-stimulus-emoji' }, item.stimulus.emoji) : null,
-              item.stimulus.text ? h('div', { class: 'quiz-stimulus-text' }, item.stimulus.text) : null,
+              item.stimulus.text ? h('div', { class: 'quiz-stimulus-text' }, typo(item.stimulus.text)) : null,
             )
           : null;
 
@@ -236,12 +248,12 @@ export function quizGame(game: QuizGame): GameModule {
           ),
           h(
             'div',
-            { class: 'quiz-card' },
+            { class: 'quiz-card quiz-item' },
             h(
               'div',
               { class: 'quiz-prompt' },
               h('button', { class: 'q-say', type: 'button', 'aria-label': 'Réécouter', onclick: () => ctx.speak(say) }, '🔊'),
-              h('p', {}, item.prompt),
+              h('p', {}, typo(item.prompt)),
             ),
             stimulus,
             answerArea,

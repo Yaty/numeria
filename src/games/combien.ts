@@ -342,7 +342,7 @@ type Answer = (correct: boolean, detail?: string) => void;
 /** Affichage flash au-dessus des boutons de réponse (les boutons apparaissent ensuite). */
 function renderCount(s: CountSpec) {
   return (el: HTMLElement) => {
-    const show = h('div', { class: 'combien-show' }, h('div', { class: 'combien-ready' }, '👀 Regarde bien !'));
+    const show = h('div', { class: 'combien-show quiz-visual' }, h('div', { class: 'combien-ready' }, '👀 Regarde bien !'));
     el.before(show);
     el.classList.add('combien-wait');
     window.setTimeout(() => {
@@ -398,11 +398,15 @@ function renderCompare(s: CompareSpec) {
   };
 }
 
+/** Ordonnée des nombres sous la ligne. */
+const LABEL_Y = 130;
+
 function renderLine(s: LineSpec) {
   return (el: HTMLElement, answer: Answer) => {
-    const W = 600;
-    const x0 = 40;
-    const x1 = W - 40;
+    // Ligne courte (420 unités) : sur téléphone, chiffres et repères restent lisibles et faciles à toucher.
+    const W = 420;
+    const x0 = 34;
+    const x1 = W - 34;
     const xOf = (v: number) => x0 + ((x1 - x0) * v) / s.max;
     const letters = ['A', 'B', 'C'];
     let done = false;
@@ -410,13 +414,15 @@ function renderLine(s: LineSpec) {
       svg('line', { x1: x0, y1: 90, x2: x1, y2: 90, class: 'combien-axis' }),
       svg('line', { x1: x0, y1: 76, x2: x0, y2: 104, class: 'combien-axis' }),
       svg('line', { x1: x1, y1: 76, x2: x1, y2: 104, class: 'combien-axis' }),
-      svg('text', { x: x0, y: 132, class: 'combien-label', 'text-anchor': 'middle' }, '0'),
-      svg('text', { x: x1, y: 132, class: 'combien-label', 'text-anchor': 'middle' }, String(s.max)),
+      svg('text', { x: x0, y: LABEL_Y, class: 'combien-label', 'text-anchor': 'middle' }, '0'),
+      svg('text', { x: x1, y: LABEL_Y, class: 'combien-label', 'text-anchor': 'middle' }, String(s.max)),
     ];
     const reveal: SVGElement = svg('g', {});
     const pins = s.marks.map((v, i) => {
       const g = svg('g', { class: 'combien-pin', role: 'button', tabindex: 0, 'aria-label': `position ${letters[i]}` });
       g.append(
+        // Zone de toucher invisible, plus grande que la pastille.
+        svg('rect', { x: xOf(v) - 30, y: 0, width: 60, height: 100, class: 'combien-pin-hit' }),
         svg('line', { x1: xOf(v), y1: 56, x2: xOf(v), y2: 90, class: 'combien-pin-stem' }),
         svg('circle', { cx: xOf(v), cy: 30, r: 26 }),
         svg('text', { x: xOf(v), y: 31, class: 'combien-pin-letter', 'text-anchor': 'middle', 'dominant-baseline': 'central' }, letters[i]),
@@ -431,7 +437,12 @@ function renderLine(s: LineSpec) {
         reveal.append(
           ...(correct ? [] : [svg('line', { x1: xOf(s.max / 2), y1: 82, x2: xOf(s.max / 2), y2: 98, class: 'combien-axis' })]),
           ...s.marks.map((m) =>
-            svg('text', { x: xOf(m), y: 132, class: `combien-label ${m === s.target ? 'good' : ''}`, 'text-anchor': 'middle' }, String(m)),
+            svg(
+              'text',
+              // Repère tout près de 0 ou de la fin : son nombre descend d'un cran pour ne pas chevaucher.
+              { x: xOf(m), y: Math.min(xOf(m) - x0, x1 - xOf(m)) < 30 ? LABEL_Y + 28 : LABEL_Y, class: `combien-label ${m === s.target ? 'good' : ''}`, 'text-anchor': 'middle' },
+              String(m),
+            ),
           ),
         );
         answer(correct, correct ? undefined : `choisi ${v} (au lieu de ${s.target})`);
@@ -445,7 +456,7 @@ function renderLine(s: LineSpec) {
         'div',
         { class: 'combien-line-box' },
         h('div', { class: 'combien-target' }, String(s.target)),
-        svg('svg', { viewBox: `0 0 ${W} 150`, class: 'combien-line' }, ...base, reveal, ...pins),
+        svg('svg', { viewBox: `0 0 ${W} 170`, class: 'combien-line' }, ...base, reveal, ...pins),
       ),
     );
   };

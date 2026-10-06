@@ -58,3 +58,14 @@
     font-size: 1.2rem;
   }
 }
+
+/* Paysage : moins d'espace vertical. */
+@media (max-height: 500px) {
+  .phrases-wrap {
+    gap: 8px;
+  }
+  .phrases-target {
+    min-height: 58px;
+    padding: 4px 8px;
+  }
+}

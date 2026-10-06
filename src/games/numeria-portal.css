@@ -18,3 +18,12 @@
   font-size: 1.4rem;
   box-shadow: 0 4px 12px rgb(29 39 66 / 0.15);
 }
+
+/* Dans le portail, les fenêtres s'ouvrent sous la barre du haut (40 px) :
+   le haut de la fenêtre et son ✕ ne passent plus sous la barre. */
+.jeu-page:has(> .jeu-bar) .overlay {
+  top: 40px;
+}
+.jeu-page:has(> .jeu-bar) .modal {
+  max-height: 100%;
+}

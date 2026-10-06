@@ -277,6 +277,8 @@ function render(seq: Sequence, say: string) {
           replayed ? `réécouté (${replayed === 'avant' ? 'avant de répondre' : 'pendant la réponse'})` : null,
         ].filter(Boolean);
         if (!correct) {
+          // La grille d'images laisse la place à la bonne suite (petits écrans).
+          el.querySelector('.memoire-answer')?.classList.add('corrige');
           extra.replaceChildren(
             h('p', { class: 'memoire-solution-label' }, 'La bonne suite :'),
             h(

@@ -124,6 +124,8 @@ export function openProblem(p: Problem, opts: ProblemOptions): void {
 
   const finish = (solved: boolean, firstTry: boolean, message: string, cls: string) => {
     result = { solved, firstTry, hints };
+    // « Pas tout à fait… » d'un essai précédent ne reste pas affiché au-dessus du « Bravo ».
+    feedback.textContent = '';
     answerZone.replaceChildren(
       h('div', { class: `result ${cls}` }, h('p', {}, message), tripleCode(p.answer, opts.orthographe)),
       h('button', { class: 'btn primary', type: 'button', onclick: () => { close(); opts.onDone(result!); } }, 'Continuer →'),
