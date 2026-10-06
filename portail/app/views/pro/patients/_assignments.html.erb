@@ -1,0 +1,51 @@
+<section class="card" id="exercices">
+  <h2>📨 Envoyer un exercice</h2>
+  <p class="muted small">Un lien vers un seul jeu, au niveau choisi, que l’enfant ouvre à la maison sans compte. Les résultats arrivent ici.</p>
+  <%= form_with url: pro_patient_assignments_path(patient), class: "form exercise-form" do |f| %>
+    <label>Jeu
+      <%= f.select :slug, Game.all.map { |g| [ "#{g.emoji} #{g.title}", g.slug ] }, {}, id: "exercise-game" %>
+    </label>
+    <label>Niveau
+      <%= f.select :level, [ [ "Automatique (s’adapte)", "auto" ], [ "Niveau 1", "1" ], [ "Niveau 2", "2" ], [ "Niveau 3", "3" ] ], {}, id: "exercise-level" %>
+    </label>
+    <label>Valable
+      <%= f.select :days, Assignment::VALIDITY_DAYS.map { |d| [ "#{d} jours", d ] }, selected: 14 %>
+    </label>
+    <label>Message (facultatif)
+      <%= f.text_field :message, maxlength: 280, placeholder: "Deux parties par jour, bravo pour ta séance !" %>
+    </label>
+    <%= f.submit "Créer le lien", class: "btn primary" %>
+  <% end %>
+
+  <% links = patient.assignments.order(created_at: :desc).limit(20) %>
+  <% if links.any? %>
+    <ul class="row-list exercise-list">
+      <% links.each do |a| %>
+        <% url = exercice_url(a.token) %>
+        <% stats = a.summary %>
+        <li class="<%= 'inactive' unless a.usable? %>">
+          <span class="avatar"><%= a.game.emoji %></span>
+          <div class="exercise-info">
+            <strong><%= a.game.title %></strong> <%= a.level ? "· niveau #{a.level}" : "· niveau automatique" %>
+            <br><small class="muted">
+              <% if a.revoked_at %>désactivé<% elsif a.expires_at.past? %>expiré<% else %>valable jusqu’au <%= l(a.expires_at.to_date) %><% end %>
+              · <%= a.opened_at ? "ouvert" : "pas encore ouvert" %>
+              <% if stats[:total] > 0 %>· <%= stats[:total] %> réponses, <%= stats[:rate] %> % justes<% end %>
+              <% if a.last_played_at %>· joué le <%= l(a.last_played_at, format: :short) %><% end %>
+            </small>
+            <% if a.usable? %>
+              <div class="exercise-share">
+                <input type="text" readonly value="<%= url %>" aria-label="Lien de l’exercice" onclick="this.select()">
+                <button type="button" class="btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(() => { this.textContent = 'Copié ✓' })">Copier</button>
+                <% text = "Exercice pour #{patient.name} : #{a.game.title}. #{url}" %>
+                <a class="btn small ghost" href="sms:?&body=<%= ERB::Util.url_encode(text) %>">SMS</a>
+                <a class="btn small ghost" href="mailto:?subject=<%= ERB::Util.url_encode("Exercice pour #{patient.name}") %>&body=<%= ERB::Util.url_encode(text) %>">E-mail</a>
+                <%= button_to "Désactiver", pro_patient_assignment_path(patient, a), method: :delete, class: "btn small ghost danger" %>
+              </div>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

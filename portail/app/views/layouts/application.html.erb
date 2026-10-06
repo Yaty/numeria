@@ -18,7 +18,7 @@
       <%= link_to (authenticated? ? home_path_for(current_user) : root_path), class: "brand" do %>
         <span class="brand-logo">🦉</span> <%= Portail::NAME %>
       <% end %>
-      <nav class="site-nav">
+      <% unless content_for?(:hide_nav) %><nav class="site-nav">
         <% if authenticated? %>
           <% if current_user.famille? %>
             <%= link_to "Jouer", jouer_path %>
@@ -35,7 +35,7 @@
           <%= link_to "Se connecter", new_session_path %>
           <%= link_to "Créer un compte", new_inscription_path, class: "btn small primary" %>
         <% end %>
-      </nav>
+      </nav><% end %>
     </header>
     <% if notice.present? %><p class="flash notice" role="status"><%= notice %></p><% end %>
     <% if alert.present? %><p class="flash alert" role="alert"><%= alert %></p><% end %>

@@ -23,6 +23,7 @@
     <%= render "shared/game_settings", profile: @patient, url: game_settings_pro_patient_path(@patient) %>
   </section>
 </div>
+<%= render "pro/patients/assignments", patient: @patient %>
 <section class="card">
   <h2>Résultats</h2>
   <%= render "shared/stats", summary: @summary, recent: @recent %>

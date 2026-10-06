@@ -10,7 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_05_215353) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_120000) do
+  create_table "assignments", force: :cascade do |t|
+    t.integer "profile_id", null: false
+    t.integer "created_by_id", null: false
+    t.string "game_slug", null: false
+    t.integer "level"
+    t.string "message"
+    t.string "token", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "revoked_at"
+    t.datetime "opened_at"
+    t.datetime "last_played_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_assignments_on_created_by_id"
+    t.index ["profile_id"], name: "index_assignments_on_profile_id"
+    t.index ["token"], name: "index_assignments_on_token", unique: true
+  end
+
   create_table "attempts", force: :cascade do |t|
     t.integer "profile_id", null: false
     t.integer "played_by_id"
@@ -22,6 +40,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_215353) do
     t.string "detail"
     t.string "mode", null: false
     t.datetime "created_at", null: false
+    t.integer "assignment_id"
+    t.index ["assignment_id"], name: "index_attempts_on_assignment_id"
     t.index ["played_by_id"], name: "index_attempts_on_played_by_id"
     t.index ["profile_id", "game_slug", "created_at"], name: "index_attempts_on_profile_id_and_game_slug_and_created_at"
     t.index ["profile_id"], name: "index_attempts_on_profile_id"
@@ -97,6 +117,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_215353) do
     t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id", unique: true
   end
 
+  add_foreign_key "assignments", "profiles"
+  add_foreign_key "assignments", "users", column: "created_by_id"
+  add_foreign_key "attempts", "assignments", on_delete: :nullify
   add_foreign_key "attempts", "profiles"
   add_foreign_key "attempts", "users", column: "played_by_id"
   add_foreign_key "game_states", "profiles"

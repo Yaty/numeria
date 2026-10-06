@@ -5,6 +5,7 @@ class Profile < ApplicationRecord
   belongs_to :therapist, class_name: "User", optional: true
   has_many :game_states, dependent: :destroy
   has_many :attempts, dependent: :delete_all
+  has_many :assignments, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 40 }
   validates :avatar, inclusion: { in: AVATARS }
@@ -41,6 +42,7 @@ class Profile < ApplicationRecord
     transaction do
       family_profile.update!(therapist: therapist, linked_at: Time.current)
       patient.attempts.update_all(profile_id: family_profile.id)
+      patient.assignments.update_all(profile_id: family_profile.id)
       patient.game_states.each do |gs|
         existing = family_profile.game_states.find_by(game_slug: gs.game_slug)
         if existing

@@ -1,0 +1,21 @@
+<% content_for :title, "Exercice de #{@assignment.profile.name}" %>
+<% content_for :main_class, "page kids" %>
+<% content_for :hide_nav, "1" %>
+<% game = @assignment.game %>
+<div class="card narrow exercise-card">
+  <span class="avatar big"><%= @assignment.profile.avatar %></span>
+  <h1>Bonjour <%= @assignment.profile.name %> !</h1>
+  <p class="lead"><%= @assignment.created_by.name %> t’a préparé un exercice :</p>
+  <div class="exercise-game">
+    <span class="game-card-emoji"><%= game.emoji %></span>
+    <div>
+      <strong><%= game.title %></strong>
+      <% if @assignment.level %><br><span class="muted">Niveau <%= @assignment.level %></span><% end %>
+    </div>
+  </div>
+  <% if @assignment.message.present? %>
+    <blockquote class="exercise-message">« <%= @assignment.message %> »</blockquote>
+  <% end %>
+  <%= link_to "▶ Commencer", exercice_jeu_path(@assignment.token), class: "btn primary big" %>
+  <p class="muted small">Lien valable jusqu’au <%= l(@assignment.expires_at.to_date, format: :long) %>. Les résultats sont transmis à <%= @assignment.created_by.name %>.</p>
+</div>

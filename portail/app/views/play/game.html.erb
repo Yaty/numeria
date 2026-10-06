@@ -1,6 +1,6 @@
 <div class="jeu-bar">
-  <%= link_to "← Jeux", catalogue_path(@profile), class: "jeu-back" %>
+  <%= link_to "← #{@back_url ? 'Retour' : 'Jeux'}", @back_url || catalogue_path(@profile), class: "jeu-back" %>
   <span class="jeu-player"><%= @profile.avatar %> <%= @profile.name %></span>
-  <% if current_user.pro? %><span class="jeu-mode">Séance</span><% end %>
+  <% if authenticated? && current_user.pro? && !@back_url %><span class="jeu-mode">Séance</span><% end %>
 </div>
 <div id="jeu" data-config="<%= @config.to_json %>"></div>

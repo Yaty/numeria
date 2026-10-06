@@ -18,6 +18,14 @@ Rails.application.routes.draw do
     post :attempts
   end
 
+  # Exercice envoyé par l'orthophoniste (sans compte)
+  scope "e/:token", controller: :assignments do
+    get "/" => :show, as: :exercice
+    get "jouer" => :play, as: :exercice_jeu
+    post :state, as: :exercice_state
+    post :attempts, as: :exercice_attempts
+  end
+
   # Espace parent
   get "parent" => "parent#index", as: :parent
   post "parent/profils" => "parent#create", as: :parent_profiles
@@ -44,6 +52,7 @@ Rails.application.routes.draw do
         post :link_code
         post :game_settings
       end
+      resources :assignments, only: %i[ create destroy ], path: "exercices"
     end
     resources :devices, only: %i[ index destroy ], path: "appareils"
   end

@@ -263,8 +263,9 @@ export function quizGame(game: QuizGame): GameModule {
         state.rounds++;
         const forced = forcedLevel(ctx);
         const after = forced ?? nextLevel(level, score);
-        const moved = after > level ? 'up' : after < level ? 'down' : 'same';
-        state.level = after;
+        const moved = forced !== null ? 'same' : after > level ? 'up' : after < level ? 'down' : 'same';
+        // niveau imposé (réglage ou exercice envoyé) : la progression automatique n'est pas touchée
+        if (forced === null) state.level = after;
         ctx.saveState(state);
         const message =
           moved === 'up' ? `Niveau ${after} débloqué !` : moved === 'down' ? 'On s’entraîne encore un peu au niveau précédent.' : stars >= 2 ? 'Très bien !' : 'Continue, tu progresses !';
