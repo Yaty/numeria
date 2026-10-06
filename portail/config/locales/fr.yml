@@ -9,7 +9,7 @@ fr:
         email_address: Adresse e-mail
         password: Mot de passe
         password_confirmation: Confirmation du mot de passe
-        rpps: Numéro RPPS ou ADELI
+        rpps: Numéro RPPS
       profile:
         name: Prénom ou pseudonyme
         avatar: Avatar

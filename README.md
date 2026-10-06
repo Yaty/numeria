@@ -62,7 +62,7 @@ Créer l'administrateur :
 
 ## Garde-fous des comptes orthophonistes
 
-- Numéro RPPS/ADELI vérifié à la main par l'admin avant l'ouverture.
+- Numéro RPPS vérifié à la main par l'admin avant l'ouverture.
 - 2 appareils au plus (le plus ancien est déconnecté). Session de 12 h.
 - Suspension automatique au-delà de 4 adresses IP ou 12 connexions en 24 h.
 - Filigrane nominatif, pages non indexées et non mises en cache, journal des connexions.

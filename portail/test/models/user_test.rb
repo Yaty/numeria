@@ -1,8 +1,10 @@
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
-  test "un orthophoniste doit donner un numéro RPPS ou ADELI valide" do
+  test "un orthophoniste doit donner un numéro RPPS valide (11 chiffres)" do
     user = User.new(name: "X", email_address: "x@example.com", password: "motdepasse-long", role: "pro", rpps: "123")
+    assert_not user.valid?
+    user.rpps = "123456789" # ancien format ADELI : refusé
     assert_not user.valid?
     user.rpps = "10 0000 0000 8"
     assert user.valid?, user.errors.full_messages.to_sentence

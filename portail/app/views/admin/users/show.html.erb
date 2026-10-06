@@ -4,7 +4,7 @@
 <div class="grid-2">
   <section class="card">
     <p>Type : <strong><%= @user.role %></strong><%= " — #{@user.pro_status}" if @user.pro? %></p>
-    <% if @user.pro? %><p>RPPS/ADELI : <code><%= @user.rpps %></code> <%= @user.rpps_checksum_ok? ? "✓" : "" %></p><% end %>
+    <% if @user.pro? %><p>RPPS : <code><%= @user.rpps %></code> <%= @user.rpps_checksum_ok? ? "✓" : "" %></p><% end %>
     <p>Accès aux jeux : <%= @user.can_play? ? "oui" : "non" %><%= ", payé jusqu’au #{l(@user.paid_until.to_date)}" if @user.paid_until %> <%= "(Stripe : #{@user.subscription_status})" if @user.subscription_status %></p>
     <p>Profils : <%= @user.profiles.count %><%= " · patients suivis : #{@user.patients.count}" if @user.pro? %></p>
     <p>Sur 24 h : <%= @detector.logins %> connexions depuis <%= @detector.distinct_ips %> adresses IP (seuils : <%= Portail::SHARING_MAX_LOGINS %> / <%= Portail::SHARING_MAX_IPS %>).</p>

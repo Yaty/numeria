@@ -16,7 +16,7 @@ class User < ApplicationRecord
   validates :name, presence: true, length: { maximum: 80 }
   validates :role, inclusion: { in: ROLES }
   validates :pro_status, inclusion: { in: PRO_STATUSES }, if: :pro?
-  validates :rpps, presence: true, uniqueness: true, format: { with: /\A(\d{11}|\d{9})\z/, message: "doit comporter 11 chiffres (RPPS) ou 9 chiffres (ADELI)" }, if: :pro?
+  validates :rpps, presence: true, uniqueness: true, format: { with: /\A\d{11}\z/, message: "doit comporter 11 chiffres" }, if: :pro?
 
   before_validation { self.pro_status ||= "en_attente" if pro? }
 

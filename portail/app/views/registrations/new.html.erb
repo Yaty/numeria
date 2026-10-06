@@ -7,7 +7,7 @@
   <h1><%= @user.pro? ? "Accès orthophoniste" : "Compte famille" %></h1>
   <p class="muted">
     <% if @user.pro? %>
-      Gratuit pour les orthophonistes en exercice. Nous vérifions votre numéro RPPS (ou ADELI) dans l’annuaire santé avant d’ouvrir l’accès, en général sous 48 h. Le compte est strictement personnel.
+      Gratuit pour les orthophonistes en exercice. Nous vérifions votre numéro RPPS dans l’annuaire santé avant d’ouvrir l’accès, en général sous 48 h. Le compte est strictement personnel.
     <% else %>
       6 € par an pour toute la famille, jusqu’à <%= Portail::MAX_PROFILES %> enfants. Le paiement se fait à l’étape suivante.
     <% end %>
@@ -20,7 +20,7 @@
     <label><%= @user.pro? ? "Nom et prénom" : "Votre prénom" %> <%= f.text_field :name, required: true, autocomplete: "name", maxlength: 80 %></label>
     <label>Adresse e-mail <%= f.email_field :email_address, required: true, autocomplete: "email" %></label>
     <% if @user.pro? %>
-      <label>Numéro RPPS (11 chiffres) ou ADELI <%= f.text_field :rpps, required: true, inputmode: "numeric", pattern: "[0-9 ]{9,14}" %></label>
+      <label>Numéro RPPS (11 chiffres) <%= f.text_field :rpps, required: true, inputmode: "numeric", pattern: "[0-9 ]{11,15}", title: "11 chiffres" %></label>
     <% end %>
     <label>Mot de passe (10 caractères minimum) <%= f.password_field :password, required: true, minlength: 10, maxlength: 72, autocomplete: "new-password" %></label>
     <label>Confirmation <%= f.password_field :password_confirmation, required: true, maxlength: 72, autocomplete: "new-password" %></label>
