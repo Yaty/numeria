@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LEVELS, MAX_DRUMS, WORDS, cgsRuns, game, graphemesOf, hasCluster, poolFor, soundsOf } from '../../src/games/tambour';
+import { LEVELS, MAX_DRUMS, WORDS, cgsRuns, game, graphemesOf, hasCluster, poolFor, silentAfter, soundsOf } from '../../src/games/tambour';
 import { GESTURES } from '../../src/portal/gestes';
 import { EMOJI, checkItems } from './phono-helpers';
 
@@ -94,5 +94,26 @@ describe('tambour des sons : graphèmes', () => {
     expect(colored('ch')).toBe('');
     expect(colored('gn')).toBe('');
     expect(colored('eau')).toBe('');
+  });
+});
+
+describe('tambour des sons : lettres muettes', () => {
+  it('rangées après le bon son', () => {
+    expect(silentAfter(find('chat'))).toEqual(['', 't']);
+    expect(silentAfter(find('lune'))).toEqual(['', '', 'e']);
+    expect(silentAfter(find('tente'))).toEqual(['', '', 'e']);
+    expect(silentAfter(find('escargot'))).toEqual(['', '', '', '', '', '', 't']);
+    expect(silentAfter(find('bateau'))).toEqual(['', '', '', '']);
+  });
+
+  it('graphèmes + lettres muettes redonnent le mot', () => {
+    for (const w of WORDS) {
+      const silent = silentAfter(w);
+      expect(graphemesOf(w).map((g, i) => g + silent[i]).join(''), w[0]).toBe(w[0]);
+    }
+  });
+
+  it('le jeu est muet', () => {
+    expect(game.silent).toBe(true);
   });
 });

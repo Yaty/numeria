@@ -11,7 +11,6 @@ games:
     title: "Numéria"
     emoji: "🏭"
     category: maths
-    ages: "6-12 ans"
     description: "Un monde de nombres à construire : on produit, on échange 10 contre 1, on ouvre les milliers… et on résout des enquêtes."
     objectives:
       - "Numération décimale de position (rangs et classes), échanges 10 → 1"
@@ -22,7 +21,6 @@ games:
     title: "Lecture flash"
     emoji: "⚡"
     category: ecrit
-    ages: "6-9 ans"
     description: "Un mot écrit apparaît très vite : touche l’image qui correspond, parmi des mots qui se ressemblent."
     objectives:
       - "Décodage rapide (voie d’assemblage) puis reconnaissance par voie d’adressage"
@@ -34,7 +32,6 @@ games:
     title: "Mots collés"
     emoji: "✂️"
     category: ecrit
-    ages: "6-10 ans"
     description: "Les mots de la phrase sont collés : touche entre les lettres pour les séparer."
     objectives:
       - "Segmentation lexicale à l’écrit, notion de mot graphique"
@@ -46,19 +43,17 @@ games:
     title: "Le tambour des sons"
     emoji: "🥁"
     category: phonologie
-    ages: "5-8 ans"
-    description: "Écoute le mot et tape sur le tambour pour chaque son entendu (chat = ch·a = 2 sons). Si c’est raté, les gestes Borel-Maisonny viennent aider, puis tous les indices."
+    description: "L’adulte dit le mot de l’image, l’enfant tape sur le tambour pour chaque son (chat = ch·a = 2 sons). Si c’est raté, les gestes Borel-Maisonny viennent aider, puis tous les indices. Sans voix."
     objectives:
       - "Segmentation phonémique et dénombrement des sons"
       - "Appui sur les gestes Borel-Maisonny (lien son-geste)"
       - "Traitement des groupes de consonnes (fleur, tracteur)"
       - "Correspondance son-graphème (niveau 3) ; c, g et s en couleur"
-    levels: ["2 ou 3 sons", "3 à 5 sons, sans groupe de consonnes", "4 à 8 sons, groupes de consonnes, graphème écrit sous chaque tambour"]
+    levels: ["2 ou 3 sons", "3 à 5 sons, sans groupe de consonnes", "4 à 8 sons, groupes de consonnes, graphème sous chaque tambour, lettres muettes en gris"]
   - slug: phrases
     title: "Phrases en désordre"
     emoji: "🧱"
     category: syntaxe
-    ages: "6-10 ans"
     description: "Les mots d’une phrase sont mélangés : remets-les dans le bon ordre."
     objectives:
       - "Ordre canonique des constituants (sujet-verbe-complément)"
@@ -69,7 +64,6 @@ games:
     title: "Qui fait quoi ?"
     emoji: "🐶"
     category: syntaxe
-    ages: "5-10 ans"
     description: "Écoute la phrase et trouve quel animal fait l’action… ou la subit."
     objectives:
       - "Compréhension des rôles thématiques (agent / patient) en phrases réversibles"
@@ -80,7 +74,6 @@ games:
     title: "La mémoire des mots"
     emoji: "🧠"
     category: memoire
-    ages: "4-9 ans"
     description: "Écoute une suite de mots sans les voir, puis touche les images dans le même ordre."
     objectives:
       - "Empan auditivo-verbal endroit (rappel sériel par reconnaissance d’images, sans production orale)"
@@ -92,7 +85,6 @@ games:
     title: "Combien ?"
     emoji: "🎲"
     category: maths
-    ages: "4-9 ans"
     description: "Reconnaître des quantités d’un coup d’œil, comparer des collections et placer des nombres sur une ligne."
     objectives:
       - "Subitizing (1 à 5) et reconnaissance de configurations canoniques (dé, doigts, boîte de dix)"

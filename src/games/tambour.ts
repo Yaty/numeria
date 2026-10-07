@@ -1,9 +1,10 @@
 /**
  * Le tambour des sons — conscience phonémique (segmentation et dénombrement des sons).
  *
- * On entend un mot (et on voit son image, jamais le mot écrit : on compterait les
- * lettres). On frappe le tambour une fois par SON entendu (« chat » = ch·a = 2 sons) ;
- * chaque frappe pose un petit tambour sur la piste, puis on valide.
+ * On voit une image (jamais le mot écrit : on compterait les lettres) ; l'adulte dit
+ * le mot, le jeu n'a pas de voix. On frappe le tambour une fois par SON entendu
+ * (« chat » = ch·a = 2 sons) ; chaque frappe pose un petit tambour sur la piste, puis
+ * on valide.
  * Principe repris de MorphoMystery : on assemble la réponse morceau par morceau
  * et on la valide soi-même ; une erreur n'arrête pas l'item, on réessaie.
  *
@@ -18,7 +19,8 @@
  * Niveau 1 : 2 ou 3 sons, syllabes simples.
  * Niveau 2 : 3 à 5 sons, sans groupe de consonnes.
  * Niveau 3 : 4 à 8 sons, avec groupes de consonnes (fl, tr, kt…) ; sous chaque tambour
- * posé s'écrit le graphème du son (bateau : b, a, t, eau), c, g et s en couleur.
+ * posé s'écrit le graphème du son (bateau : b, a, t, eau), c, g et s en couleur ; les
+ * lettres muettes (le t de chat) apparaissent sur des tambours gris, hors du compte.
  */
 import { h } from '../ui/dom';
 import { pick } from '../core/random';
@@ -73,6 +75,25 @@ export const soundsOf = (w: Word): SoundId[] => segments(w).map(([s]) => s as So
 /** Graphème de chaque son, dans l'ordre (« bateau » : b, a, t, eau). */
 export const graphemesOf = (w: Word): string[] => segments(w).map(([s, g]) => g ?? s);
 
+/**
+ * Lettres muettes qui suivent chaque son (« chat » : ['', 't'], « lune » : ['', '', 'e']).
+ * On cherche chaque graphème dans le mot, dans l'ordre : ce qui reste entre deux
+ * graphèmes (ou à la fin) ne se prononce pas.
+ */
+export function silentAfter(w: Word): string[] {
+  const word = w[0];
+  const graphemes = graphemesOf(w);
+  const after = graphemes.map(() => '');
+  let at = 0;
+  graphemes.forEach((g, i) => {
+    const found = word.indexOf(g, at);
+    if (i > 0 && found > at) after[i - 1] += word.slice(at, found);
+    at = found + g.length;
+  });
+  after[after.length - 1] += word.slice(at);
+  return after;
+}
+
 /** Groupe de consonnes : deux consonnes qui se suivent (fl, tr, kt…). */
 const VOWELS = new Set(['a', 'i', 'o', 'u', 'é', 'è', 'e', 'eu', 'ou', 'on', 'an', 'in']);
 export const hasCluster = (w: Word) => soundsOf(w).some((s, i, all) => i > 0 && !VOWELS.has(s) && !VOWELS.has(all[i - 1]));
@@ -121,16 +142,17 @@ function gestureCard(id: SoundId, grapheme: string | null): HTMLElement {
   const photo = gesturePhoto(id);
   return h(
     'figure',
-    { class: 'tambour-card', title: g.hint },
-    photo ? h('img', { src: photo, alt: g.hint }) : h('span', { class: 'tambour-card-icon', 'aria-hidden': 'true' }, g.icon),
+    { class: 'tambour-card' },
+    photo ? h('img', { src: photo, alt: g.hint }) : h('span', { class: 'tambour-card-icon', role: 'img', 'aria-label': g.hint }, g.icon),
     grapheme ? graphemeEl(grapheme, 'tambour-card-label') : null,
-    h('figcaption', {}, g.hint),
   );
 }
 
 export const game: QuizGame = {
   title: 'Le tambour des sons',
-  instructions: 'Écoute le mot. Tape sur le tambour une fois pour chaque son que tu entends, puis appuie sur Valider.',
+  instructions: 'Dis le mot de l’image. Tape sur le tambour une fois pour chaque son, puis appuie sur Valider.',
+  // Pas de voix : l'adulte dit le mot (la voix de synthèse déforme certains sons).
+  silent: true,
   levels: [
     { label: 'Mots courts', description: 'deux ou trois sons' },
     { label: 'Mots moyens', description: 'trois à cinq sons' },
@@ -147,55 +169,66 @@ export const game: QuizGame = {
     const [word, , emoji] = entry;
     const sounds = soundsOf(entry);
     const graphemes = graphemesOf(entry);
-    // Niveau 3 : chaque tambour posé montre le graphème du son correspondant.
+    const silent = silentAfter(entry);
+    // Niveau 3 : chaque tambour posé montre le graphème de son son ; les lettres
+    // muettes qui le suivent apparaissent sur des tambours gris, hors du compte.
     const writeUnder = level === 3;
-    const say = `Écoute : ${word}. Combien de sons ?`;
     return {
       key: `son:${word}`,
-      prompt: 'Combien de sons entends-tu ?',
-      say,
+      prompt: 'Combien de sons dans ce mot ?',
+      say: word,
       stimulus: { emoji },
       explain: `${word} : ${graphemes.join(' · ')}. ${NUMBERS[n]} son${n > 1 ? 's' : ''}.`.replace(/^./, (c) => c.toUpperCase()),
-      custom(el, answer, ctx) {
+      custom(el, answer) {
         el.classList.add('tambour-area');
         let fails = 0;
         let done = false;
+        let placed = 0;
+        /** 2e échec : la piste montre un emplacement par son. */
+        let slots = false;
         const track = h('div', { class: 'tambour-track', 'aria-live': 'polite', 'aria-label': 'Tambours posés' });
         const hints = h('div', { class: 'tambour-hints' });
         const note = h('p', { class: 'tambour-note', 'aria-live': 'polite' });
 
-        const placed = () => track.querySelectorAll('.tambour-beat').length;
-        const refresh = () => {
-          validate.disabled = placed() === 0 || done;
-          // 2e échec : les emplacements vides montrent combien de sons il faut.
-          track.querySelectorAll('.tambour-slot').forEach((s, i) => s.classList.toggle('filled', i < placed()));
+        const beat = (i: number, fresh: boolean) =>
+          h(
+            'div',
+            { class: `tambour-beat${fresh ? ' fresh' : ''}` },
+            h('button', { class: 'tambour-small', type: 'button', 'aria-label': 'Enlever ce tambour', onclick: () => removeDrum() }, '🥁'),
+            writeUnder && i < n ? graphemeEl(graphemes[i], 'tambour-graph') : null,
+          );
+        const muted = (letters: string, fresh: boolean) =>
+          h(
+            'div',
+            { class: `tambour-beat tambour-muet${fresh ? ' fresh' : ''}`, title: 'Lettre muette : elle ne s’entend pas' },
+            h('span', { class: 'tambour-small', 'aria-hidden': 'true' }, '🥁'),
+            h('span', { class: 'tambour-graph' }, letters),
+          );
+
+        /** Redessine la piste ; seul le dernier tambour posé est animé. */
+        const render = (freshIndex = -1) => {
+          const items: HTMLElement[] = [];
+          const total = slots ? Math.max(n, placed) : placed;
+          for (let i = 0; i < total; i++) {
+            const drum = i < placed ? beat(i, i === freshIndex) : null;
+            items.push(slots && i < n ? h('span', { class: `tambour-slot${drum ? ' filled' : ''}` }, drum) : drum!);
+            if (writeUnder && i < placed && i < n && silent[i]) items.push(muted(silent[i], i === freshIndex));
+          }
+          track.replaceChildren(...items);
+          validate.disabled = placed === 0 || done;
         };
         const addDrum = () => {
-          if (done || placed() >= MAX_DRUMS) return;
-          const index = placed();
-          const beat = h(
-            'div',
-            { class: 'tambour-beat' },
-            h('button', { class: 'tambour-small', type: 'button', 'aria-label': 'Enlever ce tambour', onclick: () => removeDrum() }, '🥁'),
-            writeUnder && index < graphemes.length ? graphemeEl(graphemes[index], 'tambour-graph') : null,
-          );
-          const slot = track.querySelector('.tambour-slot:not(.filled)');
-          if (slot) slot.append(beat);
-          else track.append(beat);
+          if (done || placed >= MAX_DRUMS) return;
+          placed++;
           big.classList.remove('hit');
           void big.offsetWidth;
           big.classList.add('hit');
-          refresh();
+          render(placed - 1);
         };
         const removeDrum = () => {
-          if (done) return;
-          const all = track.querySelectorAll('.tambour-beat');
-          all[all.length - 1]?.remove();
-          refresh();
-        };
-        const clearTrack = () => {
-          track.querySelectorAll('.tambour-beat').forEach((d) => d.remove());
-          refresh();
+          if (done || placed === 0) return;
+          placed--;
+          render();
         };
 
         /** Cartes des sons, dans l'ordre du mot ; elles s'allument une à une. */
@@ -208,11 +241,7 @@ export const game: QuizGame = {
           });
         };
 
-        const big = h(
-          'button',
-          { class: 'tambour-big', type: 'button', 'aria-label': 'Taper un son', onclick: addDrum },
-          '🥁',
-        );
+        const big = h('button', { class: 'tambour-big', type: 'button', 'aria-label': 'Taper un son', onclick: addDrum }, '🥁');
         const undo = h('button', { class: 'btn tambour-undo', type: 'button', onclick: removeDrum }, '⌫ Enlever');
         const validate = h(
           'button',
@@ -222,12 +251,13 @@ export const game: QuizGame = {
             disabled: true,
             onclick: () => {
               if (done) return;
-              const count = placed();
+              const count = placed;
               if (count === n) {
                 done = true;
                 track.classList.add('right');
                 note.textContent = '';
                 showCards(true);
+                render();
                 return answer(true, fails === 0 ? undefined : fails === 1 ? 'avec les gestes' : 'avec tous les indices');
               }
               fails++;
@@ -235,34 +265,28 @@ export const game: QuizGame = {
               void track.offsetWidth;
               track.classList.add('shake');
               if (fails === 1) {
-                clearTrack();
+                placed = 0;
                 showCards(false);
-                note.textContent = 'Regarde les gestes et réécoute le mot.';
-                ctx.speak(`Regarde les gestes. ${word}.`);
+                note.textContent = 'Regarde les gestes et redis le mot.';
               } else if (fails === 2) {
-                clearTrack();
+                placed = 0;
+                slots = true;
                 showCards(true);
-                track.prepend(...sounds.map(() => h('span', { class: 'tambour-slot' })));
                 note.textContent = 'Un tambour pour chaque carte.';
-                ctx.speak(`Un tambour pour chaque son. ${word}.`);
               } else {
                 done = true;
                 track.classList.add('wrong');
                 note.textContent = '';
                 answer(false, `${count} au lieu de ${n}`);
               }
-              refresh();
+              render();
             },
           },
           '✓ Valider',
         );
 
-        el.append(
-          h('div', { class: 'tambour-play' }, big, h('div', { class: 'tambour-side' }, undo, validate)),
-          track,
-          note,
-          hints,
-        );
+        el.append(h('div', { class: 'tambour-play' }, big, h('div', { class: 'tambour-side' }, undo, validate)), track, note, hints);
+        render();
       },
     };
   },

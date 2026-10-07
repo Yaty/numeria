@@ -20,7 +20,7 @@
         <p class="muted"><%= category.description %></p>
         <ul class="game-list">
           <% games.each do |g| %>
-            <li><span class="game-emoji"><%= g.emoji %></span> <strong><%= g.title %></strong> <span class="muted">· <%= g.ages %></span><br><small><%= g.description %></small></li>
+            <li><span class="game-emoji"><%= g.emoji %></span> <strong><%= g.title %></strong><br><small><%= g.description %></small></li>
           <% end %>
         </ul>
       </article>
@@ -58,7 +58,6 @@
 
 <section class="section faq">
   <h2>Questions fréquentes</h2>
-  <details><summary>À partir de quel âge ?</summary><p>Les jeux couvrent de 4 à 12 ans environ ; chacun a trois niveaux et s’adapte aux réussites de l’enfant.</p></details>
   <details><summary>Est-ce que ça remplace l’orthophoniste ?</summary><p>Non. Ces jeux prolongent le travail fait en séance. Seul·e un·e orthophoniste peut poser un bilan et mener une rééducation.</p></details>
   <details><summary>Quelles données sont conservées ?</summary><p>Un prénom ou pseudonyme, une année de naissance facultative et les résultats aux jeux. Rien n’est revendu ni utilisé pour de la publicité. Voir la <%= link_to "politique de confidentialité", legal_path("confidentialite") %>.</p></details>
   <details><summary>Comment relier mon enfant à son orthophoniste ?</summary><p>L’orthophoniste vous donne un code de liaison ; saisissez-le dans l’espace parent, sur le profil de votre enfant. Vous pouvez retirer la liaison à tout moment.</p></details>

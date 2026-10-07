@@ -53,6 +53,8 @@ export interface QuizGame {
   /** Consigne générale lue au début. */
   instructions: string;
   levels: [LevelInfo, LevelInfo, LevelInfo];
+  /** Jeu sans voix : rien n'est lu, pas de bouton 🔊 (l'adulte dit le mot). */
+  silent?: boolean;
   /** Items par partie (10 par défaut). */
   itemsPerRound?: number;
   /** Fabrique un item ; `recent` = clés des derniers items, à éviter. */
@@ -111,6 +113,9 @@ export function quizGame(game: QuizGame): GameModule {
       const timers: number[] = [];
       const later = (fn: () => void, ms: number) => timers.push(window.setTimeout(() => !disposed && fn(), ms));
       const rng = seeded(Date.now() % 2147483647);
+      if (game.silent) ctx = { ...ctx, speak: () => undefined };
+      const sayButton = (label: string, text: string) =>
+        game.silent ? null : h('button', { class: 'q-say', type: 'button', 'aria-label': label, onclick: () => ctx.speak(text) }, '🔊');
 
       function shell(...children: (Node | null)[]): HTMLElement {
         const root = h('div', { class: 'quiz' }, ...children);
@@ -129,7 +134,7 @@ export function quizGame(game: QuizGame): GameModule {
             { class: 'quiz-card quiz-intro' },
             h('h1', {}, game.title),
             h('p', { class: 'quiz-instructions' }, typo(game.instructions)),
-            h('button', { class: 'q-say', type: 'button', 'aria-label': 'Écouter la consigne', onclick: () => ctx.speak(game.instructions) }, '🔊'),
+            sayButton('Écouter la consigne', game.instructions),
             h(
               'div',
               { class: 'quiz-levels' },
@@ -252,7 +257,7 @@ export function quizGame(game: QuizGame): GameModule {
             h(
               'div',
               { class: 'quiz-prompt' },
-              h('button', { class: 'q-say', type: 'button', 'aria-label': 'Réécouter', onclick: () => ctx.speak(say) }, '🔊'),
+              sayButton('Réécouter', say),
               h('p', {}, typo(item.prompt)),
             ),
             stimulus,

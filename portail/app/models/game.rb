@@ -2,14 +2,13 @@
 class Game
   Category = Data.define(:slug, :name, :emoji, :description)
 
-  attr_reader :slug, :title, :emoji, :category, :ages, :description, :objectives, :levels
+  attr_reader :slug, :title, :emoji, :category, :description, :objectives, :levels
 
   def initialize(attrs)
     @slug = attrs.fetch("slug")
     @title = attrs.fetch("title")
     @emoji = attrs.fetch("emoji")
     @category = attrs.fetch("category")
-    @ages = attrs.fetch("ages")
     @description = attrs.fetch("description")
     @objectives = attrs.fetch("objectives", [])
     @levels = attrs.fetch("levels", [])
