@@ -11,7 +11,7 @@ French, in the existing style.
   (src/portal/types.ts). It is detected automatically (import.meta.glob); never edit
   `src/portal/registry.ts`.
 - For an item-based game, use the shared engine `quizGame` (src/portal/quiz.ts). Read
-  it, along with the reference example `src/games/intrus.ts`. The engine provides:
+  it, along with the reference example `src/games/lecture-flash.ts`. The engine provides:
   3 levels, 10 items per round, an adaptive level, stars, voice and recorded
   attempts.
 - Item types:

@@ -1,9 +1,7 @@
 # Catalogue des jeux. Les fiches des nouveaux jeux sont complétées d'après les comptes rendus de conception.
 categories:
-  - { slug: phonologie, name: "Conscience phonologique", emoji: "👂", description: "Syllabes, rimes et sons : entendre et manipuler les sons de la langue." }
+  - { slug: phonologie, name: "Conscience phonologique", emoji: "👂", description: "Entendre, découper et compter les sons de la langue." }
   - { slug: ecrit, name: "Langage écrit", emoji: "📖", description: "Lire vite et bien, repérer les mots dans la phrase." }
-  - { slug: orthographe, name: "Orthographe", emoji: "✏️", description: "Choisir la bonne orthographe selon le sens." }
-  - { slug: lexique, name: "Lexique et sémantique", emoji: "🧩", description: "Le sens des mots et leurs liens." }
   - { slug: syntaxe, name: "Morphosyntaxe et compréhension", emoji: "🗣️", description: "Construire et comprendre des phrases." }
   - { slug: memoire, name: "Mémoire et attention", emoji: "🧠", description: "Retenir et redire." }
   - { slug: maths, name: "Logico-mathématiques", emoji: "🔢", description: "Nombres, quantités, calcul et raisonnement." }
@@ -20,17 +18,6 @@ games:
       - "Transcodage entre les trois codes (arabe, verbal, analogique) — modèle du triple code de Dehaene"
       - "Résolution de problèmes (méthode de Singapour) : + −, × ÷, proportionnalité, fonctions, puissances"
     levels: ["Classe des unités", "Grands nombres", "Grands nombres et décimaux"]
-  - slug: intrus
-    title: "L’intrus"
-    emoji: "🕵️"
-    category: lexique
-    ages: "4-9 ans"
-    description: "Trois images vont ensemble, une n’est pas de la même famille : trouve l’intrus."
-    objectives:
-      - "Catégorisation sémantique (catégories éloignées puis proches)"
-      - "Accès lexical et dénomination"
-      - "Passage de l’image au mot écrit (niveau 3)"
-    levels: ["Familles très différentes", "Familles proches", "Mots écrits"]
   - slug: lecture-flash
     title: "Lecture flash"
     emoji: "⚡"
@@ -55,63 +42,17 @@ games:
       - "Segmentations homophones (ils ont / il sont, mon oncle)"
       - "Mots composés et mots-unités (aujourd’hui, grand-mère)"
     levels: ["3 mots courts", "4 à 6 mots, élisions", "Phrases longues, pièges"]
-  - slug: homophones
-    title: "Les homophones"
-    emoji: "✏️"
-    category: orthographe
-    ages: "7-11 ans"
-    description: "Complète la phrase avec le mot bien écrit parmi des mots qui se prononcent pareil."
-    objectives:
-      - "Orthographe grammaticale des homophones"
-      - "Stratégie de substitution (a→avait, est→était, on→il, son→mon…)"
-      - "Accords en genre et en nombre (quel/quelle, leur/leurs)"
-      - "Distinction pronom / déterminant"
-    levels: ["a/à, et/est", "on/ont, son/sont, ou/où, ces/ses", "c’est/s’est, ce/se, leur(s), quel(le)/qu’elle, mes/mais/met"]
-  - slug: syllabes
-    title: "Le train des syllabes"
-    emoji: "🚂"
+  - slug: tambour
+    title: "Le tambour des sons"
+    emoji: "🥁"
     category: phonologie
     ages: "5-8 ans"
-    description: "Écoute le mot, tape sur le tambour pour chaque syllabe, puis choisis le train qui a autant de wagons."
+    description: "Écoute le mot et tape sur le tambour pour chaque son entendu (chat = ch·a = 2 sons). Si c’est raté, les gestes Borel-Maisonny viennent aider, puis tous les indices."
     objectives:
-      - "Segmentation syllabique orale"
-      - "Dénombrement des syllabes ; e muet final non compté (pomme = 1, tomate = 2)"
-      - "Traitement des mots longs (polysyllabes)"
-    levels: ["1 à 2 syllabes", "1 à 3 syllabes", "2 à 4 syllabes"]
-  - slug: rimes
-    title: "Rimes en folie"
-    emoji: "🎵"
-    category: phonologie
-    ages: "5-8 ans"
-    description: "Trouve l’image dont le nom rime avec le mot entendu."
-    objectives:
-      - "Identification de la rime phonologique (dernière voyelle et ce qui suit)"
-      - "Distinction rime / attaque commune"
-      - "Rimes de graphies différentes (chapeau / vélo)"
-    levels: ["Rimes de même graphie, distracteurs éloignés", "Distracteurs de même attaque ou même voyelle", "Rimes de graphies différentes"]
-  - slug: son-cache
-    title: "Le son caché"
-    emoji: "👂"
-    category: phonologie
-    ages: "5-8 ans"
-    description: "Entends-tu le son dans le mot ? Quel mot commence par ce son ? Où l’entends-tu : au début, au milieu ou à la fin ?"
-    objectives:
-      - "Identification phonémique (présence / absence)"
-      - "Isolement du phonème initial"
-      - "Localisation du phonème (début, milieu, fin)"
-      - "Discrimination de phonèmes proches (s/ch/j, f/v, m/n)"
-    levels: ["Entends-tu le son ? (consonnes continues, voyelles)", "Quel mot commence par… ? (+ occlusives)", "Début, milieu ou fin ?"]
-  - slug: contraires
-    title: "Contraires et synonymes"
-    emoji: "↔️"
-    category: lexique
-    ages: "5-10 ans"
-    description: "Un mot est montré et lu : trouve son contraire, ou un mot qui veut dire presque la même chose."
-    objectives:
-      - "Relations sémantiques d’antonymie et de synonymie"
-      - "Organisation et précision du lexique (adjectifs, verbes, adverbes)"
-      - "Morphologie dérivationnelle : préfixes négatifs (in-, im-, dé-…)"
-    levels: ["Contraires d’adjectifs concrets", "Verbes, adverbes, préfixes", "Synonymes nuancés"]
+      - "Segmentation phonémique et dénombrement des sons"
+      - "Appui sur les gestes Borel-Maisonny (lien son-geste)"
+      - "Traitement des groupes de consonnes (fleur, tracteur)"
+    levels: ["2 ou 3 sons", "3 à 5 sons, sans groupe de consonnes", "4 à 8 sons, avec groupes de consonnes"]
   - slug: phrases
     title: "Phrases en désordre"
     emoji: "🧱"

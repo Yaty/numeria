@@ -50,18 +50,13 @@ miens et peuvent être revus.
 8. Données minimales : prénom ou pseudonyme et année de naissance, aucune donnée
    médicale ; journal des connexions.
 
-## Jeux (11)
+## Jeux
 
 | Domaine | Jeu | Tâche |
 |---|---|---|
-| Conscience phonologique | Le train des syllabes | compter les syllabes orales d'un mot |
-| | Rimes en folie | trouver le mot qui rime |
-| | Le son caché | entendre un son et le situer (début, milieu, fin) |
+| Conscience phonologique | Le tambour des sons | compter les sons d'un mot, avec gestes Borel-Maisonny en aide |
 | Langage écrit | Lecture flash | lire un mot présenté brièvement, choisir l'image |
 | | Mots collés | segmenter une phrase écrite sans espaces |
-| Orthographe | Les homophones | a/à, et/est, son/sont, on/ont, ces/ses… en contexte |
-| Lexique et sémantique | L'intrus | catégorisation : trouver le mot qui n'appartient pas |
-| | Contraires et synonymes | relations de sens |
 | Morphosyntaxe et compréhension | Phrases en désordre | remettre les mots dans l'ordre |
 | | Qui fait quoi ? | compréhension de phrases (passives, relatives) avec images |
 | Mémoire et attention | La mémoire des mots | empan auditif : redire une suite de mots |

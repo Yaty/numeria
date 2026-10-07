@@ -7,13 +7,13 @@ class AssignmentsTest < ActionDispatch::IntegrationTest
 
   def create_link(profile = profiles(:patient), **params)
     sign_in_as users(:pro)
-    post pro_patient_assignments_path(profile), params: { slug: "rimes", level: "2", days: "14", message: "Deux parties par jour" }.merge(params)
+    post pro_patient_assignments_path(profile), params: { slug: "phrases", level: "2", days: "14", message: "Deux parties par jour" }.merge(params)
     profile.assignments.order(:id).last
   end
 
   test "l'orthophoniste crée un lien d'exercice pour un patient" do
     a = create_link
-    assert_equal "rimes", a.game_slug
+    assert_equal "phrases", a.game_slug
     assert_equal 2, a.level
     assert_in_delta 14.days.from_now, a.expires_at, 1.minute
     assert_equal 32, a.token.size
@@ -24,7 +24,7 @@ class AssignmentsTest < ActionDispatch::IntegrationTest
     reset!
     get exercice_path(a.token)
     assert_response :success
-    assert_match "Rimes en folie", response.body
+    assert_match "Phrases en désordre", response.body
     assert_match "Deux parties par jour", response.body
     assert_equal "no-referrer", response.headers["Referrer-Policy"]
     get exercice_jeu_path(a.token)
@@ -78,7 +78,7 @@ class AssignmentsTest < ActionDispatch::IntegrationTest
 
   test "un orthophoniste ne crée pas de lien pour le patient d'un autre" do
     sign_in_as users(:pro)
-    post pro_patient_assignments_path(profiles(:patient_autre)), params: { slug: "rimes" }
+    post pro_patient_assignments_path(profiles(:patient_autre)), params: { slug: "phrases" }
     assert_response :not_found
     assert_empty profiles(:patient_autre).assignments
   end

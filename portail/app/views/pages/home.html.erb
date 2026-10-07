@@ -2,7 +2,7 @@
 <section class="hero">
   <div class="hero-text">
     <h1>Des jeux d’orthophonie pour progresser à la maison… et en séance.</h1>
-    <p class="lead">Sons, lecture, orthographe, vocabulaire, compréhension, mémoire, nombres : <%= Game.all.size %> jeux conçus pour l’orthophonie, avec une voix naturelle et des niveaux qui s’adaptent à l’enfant.</p>
+    <p class="lead">Sons, lecture, compréhension, mémoire, nombres : <%= Game.all.size %> jeux conçus pour l’orthophonie, avec une voix naturelle et des niveaux qui s’adaptent à l’enfant.</p>
     <div class="hero-actions">
       <%= link_to "Abonner ma famille — 6 €/an", new_inscription_path, class: "btn primary big" %>
       <%= link_to "Je suis orthophoniste", new_inscription_path(pro: 1), class: "btn ghost big" %>

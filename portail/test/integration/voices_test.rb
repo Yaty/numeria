@@ -9,10 +9,10 @@ class VoicesTest < ActionDispatch::IntegrationTest
     assert_response :no_content
     assert_equal "fr_FR-tom-medium", users(:pro).reload.voice
 
-    get jeu_path(profiles(:patient), "rimes")
+    get jeu_path(profiles(:patient), "phrases")
     assert_equal "fr_FR-tom-medium", JSON.parse(css_select("#jeu").first["data-config"])["voice"]
 
-    post pro_patient_assignments_path(profiles(:patient)), params: { slug: "rimes" }
+    post pro_patient_assignments_path(profiles(:patient)), params: { slug: "phrases" }
     token = profiles(:patient).assignments.last.token
     reset!
     get exercice_jeu_path(token)

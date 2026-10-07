@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_07_120000) do
   create_table "assignments", force: :cascade do |t|
     t.integer "profile_id", null: false
     t.integer "created_by_id", null: false

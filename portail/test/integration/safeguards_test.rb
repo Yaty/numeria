@@ -56,7 +56,7 @@ class SafeguardsTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     get catalogue_path(profiles(:patient_autre))
     assert_response :not_found
-    post api_game_attempts_path(profile_id: profiles(:patient_autre).id, slug: "intrus"), params: { attempts: [ { correct: true } ] }, as: :json
+    post api_game_attempts_path(profile_id: profiles(:patient_autre).id, slug: "tambour"), params: { attempts: [ { correct: true } ] }, as: :json
     assert_response :not_found
   end
 

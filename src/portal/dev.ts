@@ -1,5 +1,5 @@
 /**
- * Banc d'essai sans Rails : /play.html?jeu=intrus — état et essais en localStorage,
+ * Banc d'essai sans Rails : /play.html?jeu=tambour — état et essais en localStorage,
  * essais affichés dans la console.
  */
 import '@fontsource/andika/400.css';

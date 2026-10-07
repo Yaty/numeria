@@ -41,18 +41,18 @@ class AccountsTest < ActionDispatch::IntegrationTest
 
   test "le parent impose un niveau à un jeu" do
     sign_in_as users(:famille)
-    post parent_profile_settings_path(profiles(:lea)), params: { slug: "intrus", level: "3" }
-    assert_equal 3, profiles(:lea).game_states.find_by(game_slug: "intrus").settings["level"]
-    post parent_profile_settings_path(profiles(:lea)), params: { slug: "intrus", level: "auto" }
-    assert_nil profiles(:lea).game_states.find_by(game_slug: "intrus").settings["level"]
+    post parent_profile_settings_path(profiles(:lea)), params: { slug: "tambour", level: "3" }
+    assert_equal 3, profiles(:lea).game_states.find_by(game_slug: "tambour").settings["level"]
+    post parent_profile_settings_path(profiles(:lea)), params: { slug: "tambour", level: "auto" }
+    assert_nil profiles(:lea).game_states.find_by(game_slug: "tambour").settings["level"]
   end
 
   test "la page d'un jeu transmet la configuration au bundle" do
     sign_in_as users(:famille)
-    get jeu_path(profiles(:lea), "intrus")
+    get jeu_path(profiles(:lea), "tambour")
     assert_response :success
     config = JSON.parse(css_select("#jeu").first["data-config"])
-    assert_equal "intrus", config["slug"]
+    assert_equal "tambour", config["slug"]
     assert_equal "maison", config["mode"]
     assert_equal "Léa", config["profile"]["name"]
   end

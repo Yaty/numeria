@@ -27,7 +27,13 @@ module ApplicationHelper
     tag.span("#{rate} %", class: "rate #{klass}")
   end
 
+  # Jeux retirés du catalogue : leurs essais restent dans l'historique.
+  RETIRED_GAMES = {
+    "syllabes" => "Le train des syllabes", "rimes" => "Rimes en folie", "son-cache" => "Le son caché",
+    "homophones" => "Les homophones", "intrus" => "L’intrus", "contraires" => "Contraires et synonymes"
+  }.freeze
+
   def game_title(slug)
-    Game.all.find { |g| g.slug == slug }&.title || slug
+    Game.all.find { |g| g.slug == slug }&.title || RETIRED_GAMES[slug] || slug
   end
 end

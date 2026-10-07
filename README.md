@@ -3,7 +3,7 @@
 Portail de jeux pour l'orthophonie (4-12 ans) :
 - comptes **famille** avec abonnement Stripe à 6 €/an ;
 - comptes **orthophoniste** vérifiés (RPPS) et protégés contre le partage ;
-- une douzaine de jeux, classés par domaine.
+- huit jeux, classés par domaine.
 
 Conception : [`docs/specs/2026-10-05-portail-design.md`](docs/specs/2026-10-05-portail-design.md).
 Numéria, le jeu de numération d'origine : [`docs/specs/2026-10-05-numeria-design.md`](docs/specs/2026-10-05-numeria-design.md).

@@ -10,8 +10,8 @@ class ProfileTest < ActiveSupport::TestCase
 
   test "liaison par code : le profil famille récupère l'orthophoniste et l'historique de séance" do
     patient = profiles(:patient)
-    patient.attempts.create!(game_slug: "intrus", correct: true, mode: "seance", level: "1", item: "x")
-    patient.game_states.create!(game_slug: "intrus", state: { "level" => 2 }, settings: { "level" => 2 })
+    patient.attempts.create!(game_slug: "tambour", correct: true, mode: "seance", level: "1", item: "x")
+    patient.game_states.create!(game_slug: "tambour", state: { "level" => 2 }, settings: { "level" => 2 })
     code = patient.generate_link_code!
 
     lea = profiles(:lea)
@@ -19,7 +19,7 @@ class ProfileTest < ActiveSupport::TestCase
     lea.reload
     assert_equal users(:pro), lea.therapist
     assert_equal 1, lea.attempts.count
-    assert_equal({ "level" => 2 }, lea.game_states.find_by(game_slug: "intrus").settings)
+    assert_equal({ "level" => 2 }, lea.game_states.find_by(game_slug: "tambour").settings)
     assert_not Profile.exists?(patient.id)
     assert lea.linked_to_therapist?
   end
