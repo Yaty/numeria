@@ -52,7 +52,8 @@ games:
       - "Segmentation phonémique et dénombrement des sons"
       - "Appui sur les gestes Borel-Maisonny (lien son-geste)"
       - "Traitement des groupes de consonnes (fleur, tracteur)"
-    levels: ["2 ou 3 sons", "3 à 5 sons, sans groupe de consonnes", "4 à 8 sons, avec groupes de consonnes"]
+      - "Correspondance son-graphème (niveau 3) ; c, g et s en couleur"
+    levels: ["2 ou 3 sons", "3 à 5 sons, sans groupe de consonnes", "4 à 8 sons, groupes de consonnes, graphème écrit sous chaque tambour"]
   - slug: phrases
     title: "Phrases en désordre"
     emoji: "🧱"

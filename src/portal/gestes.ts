@@ -1,10 +1,10 @@
 /**
  * Les sons du français et leurs gestes Borel-Maisonny (aide visuelle).
  *
- * Chaque son a un pictogramme provisoire (émoji de main) et une description courte
- * du geste. Pour afficher une vraie photo du geste, déposer une image nommée d'après
- * l'identifiant du son dans `src/assets/gestes/` (ex. `ch.webp`, `an.jpg`) : elle est
- * détectée à la compilation et remplace le pictogramme.
+ * Dessins et descriptions : « Les gestes Borel-Maisonny », Le blog de Chat noir
+ * (Catherine Peronnet, 2020). Une image par son dans `src/assets/gestes/`, nommée
+ * d'après l'identifiant du son (é → e-aigu, è → e-grave) ; un son sans image
+ * garde son pictogramme.
  */
 
 export type SoundId =
@@ -13,53 +13,56 @@ export type SoundId =
   | 'l' | 'r' | 'm' | 'n' | 'gn';
 
 export interface Gesture {
-  /** Comment on écrit le plus souvent ce son (étiquette de la carte). */
-  label: string;
-  /** Pictogramme provisoire, en attendant une photo du geste. */
+  /** Pictogramme de secours, si l'image du geste manque. */
   icon: string;
-  /** Le geste, en quelques mots (lisible par l'adulte, lu à l'enfant). */
+  /** Le geste, en quelques mots. */
   hint: string;
 }
 
 export const GESTURES: Record<SoundId, Gesture> = {
-  a: { label: 'a', icon: '🖐️', hint: 'La main grande ouverte, la bouche grande ouverte.' },
-  i: { label: 'i', icon: '☝️', hint: 'Un doigt levé, tout droit.' },
-  o: { label: 'o', icon: '👌', hint: 'Les doigts font un rond.' },
-  u: { label: 'u', icon: '✌️', hint: 'Deux doigts levés.' },
-  é: { label: 'é', icon: '🫸', hint: 'La main penche en avant, comme l’accent du é.' },
-  è: { label: 'è', icon: '🫷', hint: 'La main penche en arrière, comme l’accent du è.' },
-  e: { label: 'e', icon: '🫴', hint: 'La main fait un petit creux.' },
-  eu: { label: 'eu', icon: '🤏', hint: 'Le pouce glisse entre deux doigts.' },
-  ou: { label: 'ou', icon: '👌', hint: 'Les doigts font un rond, puis deux doigts, et la main avance.' },
-  on: { label: 'on', icon: '👃', hint: 'Le rond du o, tout près du nez.' },
-  an: { label: 'an', icon: '👃', hint: 'La main ouverte du a, tout près du nez.' },
-  in: { label: 'in', icon: '👃', hint: 'Le doigt levé du i, tout près du nez.' },
-  p: { label: 'p', icon: '✊', hint: 'Le poing fermé s’ouvre d’un coup, avec la bouche.' },
-  t: { label: 't', icon: '🤌', hint: 'Deux doigts pincent la petite barre du t.' },
-  k: { label: 'c', icon: '👇', hint: 'Le doigt montre le fond de la bouche.' },
-  b: { label: 'b', icon: '🤚', hint: 'La main droite fait un petit ventre devant.' },
-  d: { label: 'd', icon: '🫲', hint: 'La main gauche fait une bosse derrière.' },
-  g: { label: 'g', icon: '🫱', hint: 'On montre la bouche, puis la gorge.' },
-  f: { label: 'f', icon: '💨', hint: 'La main frotte en avançant, on souffle longtemps.' },
-  s: { label: 's', icon: '🐍', hint: 'Le doigt ondule comme un serpent.' },
-  ch: { label: 'ch', icon: '🤲', hint: 'Les mains tiennent les joues.' },
-  v: { label: 'v', icon: '✌️', hint: 'Les mains font un V.' },
-  z: { label: 'z', icon: '🐝', hint: 'Le doigt vole en zigzag, comme une guêpe.' },
-  j: { label: 'j', icon: '👉', hint: 'Un doigt fait un point sur la joue.' },
-  l: { label: 'l', icon: '👅', hint: 'Le doigt monte devant les lèvres, comme la langue.' },
-  r: { label: 'r', icon: '🫳', hint: 'La main sur la gorge : ça gratte.' },
-  m: { label: 'm', icon: '🤟', hint: 'Trois doigts, les lèvres serrées : ça chante dans le nez.' },
-  n: { label: 'n', icon: '✌️', hint: 'Deux doigts sur le nez : ça chante dans le nez.' },
-  gn: { label: 'gn', icon: '👃', hint: 'Le doigt fait le tour du nez : il monte d’un côté, descend de l’autre.' },
+  a: { icon: '🖐️', hint: 'J’ouvre ma main et je dis « a ».' },
+  i: { icon: '☝️', hint: 'Je lève mon doigt et je dis « i ».' },
+  o: { icon: '👌', hint: 'Je forme un rond avec mes doigts et je dis « o ».' },
+  u: { icon: '✌️', hint: 'Je lève mes deux doigts et je dis « u ».' },
+  é: { icon: '🫸', hint: 'Je mets l’accent en avant et je dis « é ».' },
+  è: { icon: '🫷', hint: 'Je mets l’accent en arrière et je dis « è ».' },
+  e: { icon: '🫴', hint: 'Je fais un creux avec ma main et je dis « e ».' },
+  eu: { icon: '🤏', hint: 'Je mets mon pouce entre mes deux doigts et je dis « eu ».' },
+  ou: { icon: '👌', hint: 'Je forme un o et un u avec mes doigts et je dis « ou ».' },
+  on: { icon: '👃', hint: 'Loin de mon nez, c’est « o ». Près de mon nez, c’est « on ».' },
+  an: { icon: '👃', hint: 'Loin de mon nez, c’est « a ». Près de mon nez, c’est « an ».' },
+  in: { icon: '👃', hint: 'Loin de mon nez, c’est « i ». Près de mon nez, c’est « in ».' },
+  p: { icon: '✊', hint: 'Je ferme mon poing puis j’ouvre ma main et je dis « p ».' },
+  t: { icon: '🤌', hint: 'Je pince la barre du T et je dis « t ».' },
+  k: { icon: '👇', hint: 'Je montre le fond de ma bouche et je dis « c ».' },
+  b: { icon: '🤚', hint: 'Je fais une bosse sur mon ventre puis j’ouvre ma main et je dis « b ».' },
+  d: { icon: '🫲', hint: 'Je fais une bosse dans mon dos et je dis « d ».' },
+  g: { icon: '🫱', hint: 'Je montre ma bouche et ma gorge et je dis « g ».' },
+  f: { icon: '💨', hint: 'Je fais comme si je frottais fort et je dis « f ».' },
+  s: { icon: '🐍', hint: 'Je fais un S avec mon doigt et je dis « s ».' },
+  ch: { icon: '🤲', hint: 'Je prends mes joues et je dis « ch ».' },
+  v: { icon: '✌️', hint: 'Je fais un V avec mes mains et je dis « v ».' },
+  z: { icon: '🐝', hint: 'Mon doigt fait des zigzags et je dis « z ».' },
+  j: { icon: '👉', hint: 'Je fais un point sur ma joue et je dis « j ».' },
+  l: { icon: '🤫', hint: 'Je mets mon doigt sur mes lèvres et je dis « l ».' },
+  r: { icon: '🫳', hint: 'Je montre ma gorge qui gratte et je dis « r ».' },
+  m: { icon: '🤟', hint: 'Je fais le monstre à trois pattes en disant « m ».' },
+  n: { icon: '👃', hint: 'Je mets mes doigts sur mon nez et je dis « n ».' },
+  gn: { icon: '👃', hint: 'Je fais glisser mon doigt autour de mon nez et je dis « gn ».' },
 };
 
 export const isSound = (s: string): s is SoundId => s in GESTURES;
 
-/** Photos de gestes déposées dans src/assets/gestes/<son>.<ext> (aucune par défaut). */
+const FILE_NAMES: Record<string, SoundId> = { 'e-aigu': 'é', 'e-grave': 'è' };
+
+/** Images des gestes : src/assets/gestes/<son>.<ext>. */
 const PHOTOS: Record<string, string> = Object.fromEntries(
   Object.entries(
     import.meta.glob<string>('../assets/gestes/*.{webp,png,jpg,jpeg,svg}', { eager: true, query: '?url', import: 'default' }),
-  ).map(([path, url]) => [path.replace(/^.*\/|\.[^.]+$/g, ''), url]),
+  ).map(([path, url]) => {
+    const name = path.replace(/^.*\/|\.[^.]+$/g, '');
+    return [FILE_NAMES[name] ?? name, url];
+  }),
 );
 
 export const gesturePhoto = (id: SoundId): string | undefined => PHOTOS[id];

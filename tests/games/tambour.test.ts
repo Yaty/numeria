@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LEVELS, MAX_DRUMS, WORDS, game, hasCluster, poolFor, soundsOf } from '../../src/games/tambour';
+import { LEVELS, MAX_DRUMS, WORDS, cgsRuns, game, graphemesOf, hasCluster, poolFor, soundsOf } from '../../src/games/tambour';
 import { GESTURES } from '../../src/portal/gestes';
 import { EMOJI, checkItems } from './phono-helpers';
 
@@ -46,7 +46,6 @@ describe('tambour des sons : données', () => {
 
   it('chaque son a un geste décrit', () => {
     for (const g of Object.values(GESTURES)) {
-      expect(g.label).toBeTruthy();
       expect(g.hint.length).toBeGreaterThan(10);
     }
   });
@@ -61,5 +60,39 @@ describe('tambour des sons : makeItem', () => {
       expect(item.stimulus?.text).toBeUndefined();
       expect(item.prompt).not.toContain(w);
     });
+  });
+});
+
+describe('tambour des sons : graphèmes', () => {
+  it('les graphèmes se suivent dans le mot ; il ne reste que des lettres muettes', () => {
+    for (const w of WORDS) {
+      let rest = w[0];
+      let at = 0;
+      for (const g of graphemesOf(w)) {
+        const i = rest.indexOf(g, at);
+        expect(i, `${w[0]} : « ${g} »`).toBeGreaterThanOrEqual(0);
+        rest = rest.slice(0, i) + '_'.repeat(g.length) + rest.slice(i + g.length);
+        at = i + g.length;
+      }
+      expect(rest.replaceAll('_', ''), w[0]).toMatch(/^[etsdpqz]*$/);
+    }
+  });
+
+  it('exemples vérifiés à la main', () => {
+    expect(graphemesOf(find('bateau'))).toEqual(['b', 'a', 't', 'eau']);
+    expect(graphemesOf(find('chat'))).toEqual(['ch', 'a']);
+    expect(graphemesOf(find('phoque'))).toEqual(['ph', 'o', 'qu']);
+    expect(graphemesOf(find('cygne'))).toEqual(['c', 'y', 'gn']);
+  });
+
+  it('c, g et s en couleur, sauf dans ch et gn', () => {
+    const colored = (g: string) => cgsRuns(g).filter((r) => r.letter).map((r) => r.text).join('');
+    expect(colored('c')).toBe('c');
+    expect(colored('ss')).toBe('ss');
+    expect(colored('gu')).toBe('g');
+    expect(colored('ç')).toBe('ç');
+    expect(colored('ch')).toBe('');
+    expect(colored('gn')).toBe('');
+    expect(colored('eau')).toBe('');
   });
 });
