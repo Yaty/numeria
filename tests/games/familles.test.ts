@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { FAMILIES, checkAnswer, normalize, pointsFor } from '../../src/data/familles';
+import { FAMILIES, checkAnswer, normalize, parseFamily, pointsFor } from '../../src/data/familles';
 import { ranking } from '../../src/games/familles';
 
 const all = Object.values(FAMILIES).flat();
 const fam = (w: string) => all.find((f) => f.word === w)!;
 
 describe('familles de mots : données', () => {
-  it('15 familles par niveau, au moins 4 mots chacune, sans doublon', () => {
-    for (const level of [1, 2, 3] as const) {
-      expect(FAMILIES[level].length).toBeGreaterThanOrEqual(15);
+  it('au moins 14 familles par niveau, au moins 4 mots chacune, sans doublon', () => {
+    for (const level of [1, 2] as const) {
+      expect(FAMILIES[level].length).toBeGreaterThanOrEqual(14);
       for (const f of FAMILIES[level]) {
         expect(f.members.length, f.word).toBeGreaterThanOrEqual(4);
         expect(new Set(f.members.map(normalize)).size, f.word).toBe(f.members.length);
@@ -41,9 +41,36 @@ describe('familles de mots : réponses', () => {
     expect(checkAnswer(fam('gonfle'), '   ', [])).toMatchObject({ ok: false, reason: 'vide' });
   });
 
+  it('accepte -é à la place de -er', () => {
+    expect(checkAnswer(fam('jardin'), 'jardiné', [])).toEqual({ ok: true, member: 'jardiner' });
+    expect(checkAnswer(fam('neige'), 'déneigées', [])).toEqual({ ok: true, member: 'déneiger' });
+    expect(checkAnswer(fam('gonfle'), 'degonfle', [])).toEqual({ ok: true, member: 'dégonflé' });
+    expect(checkAnswer(fam('jardin'), 'jardinés', ['jardiner'])).toMatchObject({ ok: false, reason: 'deja' });
+    expect(checkAnswer(fam('laver'), 'lavé', [])).toMatchObject({ ok: false, reason: 'depart' });
+  });
+
   it('un mot de la liste passe avant les variantes du mot de départ', () => {
     expect(checkAnswer(fam('ami'), 'amie', [])).toEqual({ ok: true, member: 'amie' });
     expect(checkAnswer(fam('fort'), 'forte', [])).toEqual({ ok: true, member: 'forte' });
+  });
+});
+
+describe('familles créées par les joueurs', () => {
+  it('lit les mots séparés par virgules ou lignes, sans doublon ni mot de départ', () => {
+    expect(parseFamily(' poule ', 'poulet, poussin\n Poulet ;poulailler\n\npoule')).toEqual({
+      word: 'poule',
+      members: ['poulet', 'poussin', 'poulailler'],
+    });
+  });
+
+  it('refuse une famille sans mot de départ ou sans mot', () => {
+    expect(parseFamily('  ', 'poulet')).toBeTypeOf('string');
+    expect(parseFamily('poule', ' , \n')).toBeTypeOf('string');
+  });
+
+  it('se joue comme les autres', () => {
+    const f = parseFamily('poule', 'poulailler') as ReturnType<typeof fam>;
+    expect(checkAnswer(f, 'poulaillers', [])).toEqual({ ok: true, member: 'poulailler' });
   });
 });
 

@@ -6,25 +6,27 @@
  * dans une même famille (10, 20, 30…) : chercher loin paie plus que passer. On peut
  * passer au mot suivant à tout moment. Chaque joueur a 3 minutes, à tour de rôle sur
  * le même appareil ; à la fin, le classement. Après chaque tour, les mots trouvés et
- * ceux qu'on aurait pu trouver.
+ * ceux qu'on aurait pu trouver. Les joueurs peuvent aussi créer leurs propres familles
+ * (« Nos familles »), gardées dans le profil.
  *
  * Seule une partie à un joueur est enregistrée dans les statistiques du profil (en
  * groupe, les réponses ne sont pas celles de l'enfant suivi).
  */
 import { h } from '../ui/dom';
 import { seeded, shuffle } from '../core/random';
-import { FAMILIES, checkAnswer, pointsFor, type Family } from '../data/familles';
+import { FAMILIES, MAX_CUSTOM, checkAnswer, parseFamily, pointsFor, type Family } from '../data/familles';
 import type { GameModule } from '../portal/types';
 import './familles.css';
 
 export const TURN_SECONDS = 180;
 export const MAX_PLAYERS = 6;
-type Level = 1 | 2 | 3;
+type Level = 1 | 2;
+/** Un niveau, ou les familles créées par les joueurs. */
+type Deck = Level | 'perso';
 
 const LEVEL_LABELS: Record<Level, string> = {
   1: 'Mots du quotidien',
   2: 'Grandes familles',
-  3: 'Mots qui changent de forme',
 };
 
 interface Played {
@@ -37,7 +39,8 @@ interface Player {
   played: Played[];
 }
 interface State {
-  best: Partial<Record<Level, number>>;
+  best: Partial<Record<Deck, number>>;
+  custom: Family[];
 }
 
 const MESSAGES = {
@@ -57,9 +60,11 @@ const time = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, 
 const game: GameModule = {
   mount(el, ctx) {
     const rng = seeded(Date.now() % 2147483647);
-    const state: State = { best: { ...((ctx.state as State | null)?.best ?? {}) } };
-    const forced = [1, 2, 3].includes(ctx.settings.level as number) ? (ctx.settings.level as Level) : null;
-    let level: Level = forced ?? 1;
+    const saved = ctx.state as Partial<State> | null;
+    const state: State = { best: { ...(saved?.best ?? {}) }, custom: [...(saved?.custom ?? [])] };
+    const forced = [1, 2].includes(ctx.settings.level as number) ? (ctx.settings.level as Level) : null;
+    let level: Deck = forced ?? 1;
+    const deckOf = (d: Deck) => (d === 'perso' ? state.custom : FAMILIES[d]);
     let timer = 0;
     let disposed = false;
 
@@ -93,10 +98,13 @@ const game: GameModule = {
         list.querySelectorAll<HTMLButtonElement>('.fam-remove').forEach((b) => (b.hidden = list.children.length <= 1));
       };
       const add = h('button', { class: 'btn ghost', type: 'button', onclick: () => addRow()?.focus() }, '+ Ajouter un joueur');
+      const readNames = () => [...list.querySelectorAll<HTMLInputElement>('.fam-name')].map((i) => i.value);
+      if (level === 'perso' && !state.custom.length) level = forced ?? 1;
+      const decks: Deck[] = state.custom.length ? [1, 2, 'perso'] : [1, 2];
       const levels = h(
         'div',
         { class: 'quiz-levels' },
-        ([1, 2, 3] as Level[]).map((n) =>
+        decks.map((n) =>
           h(
             'button',
             {
@@ -108,8 +116,8 @@ const game: GameModule = {
                 levels.querySelectorAll('.quiz-level').forEach((b) => b.classList.toggle('current', b === e.currentTarget));
               },
             },
-            h('strong', {}, `Niveau ${n}`),
-            h('span', {}, LEVEL_LABELS[n]),
+            h('strong', {}, n === 'perso' ? 'Nos familles' : `Niveau ${n}`),
+            h('span', {}, n === 'perso' ? `${state.custom.length} famille${state.custom.length > 1 ? 's' : ''} créée${state.custom.length > 1 ? 's' : ''}` : LEVEL_LABELS[n]),
             state.best[n] ? h('span', { class: 'quiz-stars' }, `record ${state.best[n]} pts`) : null,
           ),
         ),
@@ -121,6 +129,9 @@ const game: GameModule = {
         list,
         add,
         levels,
+        forced === null
+          ? h('button', { class: 'btn ghost', type: 'button', onclick: () => editor(readNames()) }, '✏️ Créer une famille')
+          : null,
         h(
           'button',
           {
@@ -142,6 +153,88 @@ const game: GameModule = {
       names.forEach((n) => addRow(n));
     }
 
+    /** Créer ses familles : le mot de départ et ses mots ; liste des familles déjà créées. */
+    function editor(names: string[], error = ''): void {
+      const word = h('input', { class: 'fam-name', type: 'text', maxlength: 30, autocomplete: 'off', 'aria-label': 'Mot de départ', placeholder: 'ex. poule' });
+      const words = h('textarea', {
+        class: 'fam-name fam-words',
+        rows: 4,
+        'aria-label': 'Mots de la même famille',
+        placeholder: 'poulet, poussin, poulailler…',
+      });
+      const note = h('p', { class: 'fam-note bad', 'aria-live': 'polite' }, error);
+      const full = state.custom.length >= MAX_CUSTOM;
+      const save = (e: Event) => {
+        e.preventDefault();
+        const r = parseFamily(word.value, words.value);
+        if (typeof r === 'string') {
+          note.textContent = r;
+          return;
+        }
+        const i = state.custom.findIndex((f) => f.word.toLowerCase() === r.word.toLowerCase());
+        if (i >= 0) state.custom[i] = r;
+        else state.custom.push(r);
+        ctx.saveState(state);
+        editor(names);
+      };
+      screen(
+        h('h1', {}, 'Nos familles'),
+        h('p', { class: 'quiz-instructions' }, 'Écris un mot, puis les mots de sa famille, séparés par des virgules. Seuls ces mots rapporteront des points.'),
+        full
+          ? h('p', { class: 'muted' }, `${MAX_CUSTOM} familles au plus : retire-en une pour en créer une autre.`)
+          : h(
+              'form',
+              { class: 'fam-create', onsubmit: save },
+              h('label', {}, 'Mot de départ', word),
+              h('label', {}, 'Mots de la même famille', words),
+              note,
+              h('button', { class: 'btn primary', type: 'submit' }, '+ Ajouter cette famille'),
+            ),
+        state.custom.length
+          ? h(
+              'ul',
+              { class: 'fam-review fam-custom' },
+              state.custom.map((f, i) =>
+                h(
+                  'li',
+                  {},
+                  h('div', {}, h('strong', {}, f.word), ' : ', h('span', {}, f.members.join(', '))),
+                  h(
+                    'button',
+                    {
+                      class: 'btn ghost fam-remove',
+                      type: 'button',
+                      'aria-label': `Retirer la famille de ${f.word}`,
+                      onclick: () => {
+                        state.custom.splice(i, 1);
+                        if (level === 'perso' && !state.custom.length) level = 1;
+                        ctx.saveState(state);
+                        editor(names);
+                      },
+                    },
+                    '✕',
+                  ),
+                ),
+              ),
+            )
+          : null,
+        h(
+          'button',
+          {
+            class: 'btn primary big',
+            type: 'button',
+            onclick: () => {
+              if (state.custom.length) level = 'perso';
+              setup(names);
+            },
+          },
+          state.custom.length ? '▶ Jouer avec nos familles' : '← Retour',
+        ),
+        state.custom.length ? h('button', { class: 'btn ghost', type: 'button', onclick: () => setup(names) }, '← Retour') : null,
+      );
+      if (!full) word.focus();
+    }
+
     /** Avant chaque tour : on passe l'appareil au joueur. */
     function turnIntro(players: Player[], index: number): void {
       const p = players[index];
@@ -156,7 +249,7 @@ const game: GameModule = {
     /** Un tour de 3 minutes. */
     function turn(players: Player[], index: number): void {
       const p = players[index];
-      const deck = shuffle(rng, FAMILIES[level]);
+      const deck = shuffle(rng, deckOf(level));
       let current = -1;
       let played: Played;
       const ends = performance.now() + TURN_SECONDS * 1000;

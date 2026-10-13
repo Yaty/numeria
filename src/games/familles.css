@@ -192,3 +192,30 @@
     animation: none;
   }
 }
+
+/* Créer ses familles. */
+.fam-create {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  max-width: 460px;
+}
+.fam-create label {
+  display: grid;
+  gap: 4px;
+  font-weight: 700;
+  text-align: left;
+}
+.fam-words {
+  resize: vertical;
+}
+.fam-custom li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+.fam-custom li > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

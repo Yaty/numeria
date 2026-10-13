@@ -3,12 +3,13 @@
  *
  * Chaque famille : le mot montré, puis les mots de la même famille acceptés. On
  * accepte une réponse sans accents ni majuscules (« deneiger » → déneiger, la bonne
- * orthographe est montrée), au pluriel ou au féminin régulier (+s, +x, +e, +es).
+ * orthographe est montrée), au pluriel ou au féminin régulier (+s, +x, +e, +es), et
+ * en -é à la place de -er (« dégonflé » → dégonfler).
  * Les formes conjuguées ne comptent pas.
  *
  * Niveau 1 : familles transparentes du quotidien (dent → dentiste).
- * Niveau 2 : familles plus grandes, préfixes et suffixes variés (terre → atterrir).
- * Niveau 3 : radicaux qui changent de forme (pied → piéton, pédale ; mer → marin).
+ * Niveau 2 : familles plus grandes, préfixes et suffixes variés (terre → atterrir),
+ * radicaux qui changent de forme (pied → piéton, pédale ; mer → marin).
  */
 
 export interface Family {
@@ -18,15 +19,13 @@ export interface Family {
 
 const f = (word: string, members: string): Family => ({ word, members: members.split(', ') });
 
-export const FAMILIES: Record<1 | 2 | 3, readonly Family[]> = {
+export const FAMILIES: Record<1 | 2, readonly Family[]> = {
   1: [
     f('gonfle', 'gonfler, gonflable, gonflage, gonflement, gonfleur, gonflé, dégonfler, dégonflé, regonfler'),
-    f('dent', 'dentiste, dentaire, dentier, dentifrice, dentition, édenté, dentelle, dentelé'),
+    f('dent', 'dentiste, dentaire, dentier, dentifrice, dentition'),
     f('jardin', 'jardiner, jardinier, jardinière, jardinage, jardinet'),
     f('lait', 'laitier, laitière, laiterie, laitage, laiteux, allaiter, allaitement'),
-    f('fleur', 'fleurir, fleuri, fleuriste, fleurette, refleurir, défleurir, floraison, floral'),
     f('chanter', 'chant, chanteur, chanteuse, chanson, chansonnette, chantonner, enchanter, enchanté, déchanter, rechanter'),
-    f('jouer', 'jeu, joueur, joueuse, jouet, déjouer, rejouer, enjeu, jouable, injouable'),
     f('neige', 'neiger, enneigé, neigeux, enneigement, déneiger, déneigement, déneigeuse'),
     f('laver', 'lavage, lavabo, lavable, lavoir, laverie, laveur, délaver, relaver, lave-vaisselle, lave-linge, lavette'),
     f('nager', 'nage, nageur, nageuse, nageoire, natation'),
@@ -35,8 +34,11 @@ export const FAMILIES: Record<1 | 2 | 3, readonly Family[]> = {
     f('dessin', 'dessiner, dessinateur, dessinatrice, redessiner'),
     f('glace', 'glacier, glacière, glacé, glacial, glaçon, glacer, verglas, glaciaire'),
     f('sucre', 'sucrer, sucré, sucrier, sucrerie, sucrette'),
+    f('porter', 'porteur, portable, portage, apporter, emporter, transporter, transport, importer, exporter, rapporter, reporter, supporter, comporter'),
   ],
   2: [
+    f('fleur', 'fleurir, fleuri, fleuriste, fleurette, refleurir, défleurir, floraison, floral'),
+    f('jouer', 'jeu, joueur, joueuse, jouet, déjouer, rejouer, enjeu, jouable, injouable'),
     f('terre', 'terrain, terrestre, terrier, enterrer, enterrement, déterrer, atterrir, atterrissage, souterrain, territoire, terreau, terrasse, extraterrestre, parterre'),
     f('long', 'longue, longueur, allonger, allongement, rallonger, rallonge, longer, longtemps, longuement, prolonger, prolongation'),
     f('blanc', 'blanche, blancheur, blanchir, blanchisserie, blanchâtre, blanchiment'),
@@ -44,7 +46,6 @@ export const FAMILIES: Record<1 | 2 | 3, readonly Family[]> = {
     f('dormir', 'dortoir, dormeur, dormeuse, endormir, endormi, endormissement, rendormir'),
     f('feuille', 'feuillage, feuillu, effeuiller, feuilleton, feuilleter, feuillet, mille-feuille'),
     f('tourner', 'tour, tournant, tournée, retour, retourner, détour, détourner, contourner, entourer, autour, tournevis, tournesol, tournoyer'),
-    f('porter', 'porteur, portable, portage, apporter, emporter, transporter, transport, importer, exporter, rapporter, reporter, supporter, comporter'),
     f('peindre', 'peinture, peintre, peint, repeindre, dépeindre'),
     f('vent', 'venter, venteux, ventilateur, ventiler, ventilation, éventail, paravent'),
     f('pluie', 'pleuvoir, pluvieux, parapluie, pluviomètre, pleuvoter, pluvial'),
@@ -52,8 +53,8 @@ export const FAMILIES: Record<1 | 2 | 3, readonly Family[]> = {
     f('ami', 'amie, amitié, amical, amicale, amicalement, inamical'),
     f('fort', 'forte, force, fortement, forteresse, fortifier, renforcer, renfort, effort, efforcer'),
     f('sel', 'salé, saler, salière, dessaler, salin, saline, salaison, salure'),
-  ],
-  3: [
+    f('marché', 'marchand, marchande, marchandise, marchander, marchandage, supermarché, hypermarché'),
+    f('herbe', 'herbier, herbivore, herbage, herbacé, herbeux, désherber, désherbant, désherbage, herboriste'),
     f('pied', 'piéton, piétonne, piétiner, piétinement, trépied, pédale, pédaler, pédestre, pédicure, cale-pied'),
     f('main', 'manuel, manuellement, manette, manier, manipuler, manipulation, menotte, maintenir, manucure, manœuvre'),
     f('mer', 'marin, marine, maritime, amerrir, amerrissage, sous-marin, outre-mer'),
@@ -69,6 +70,14 @@ export const FAMILIES: Record<1 | 2 | 3, readonly Family[]> = {
     f('arbre', 'arbuste, arbrisseau, arboré, arboriculteur, arborescent'),
     f('riche', 'richesse, richement, enrichir, enrichissement'),
     f('bois', 'boisé, boiserie, déboiser, déboisement, reboiser, reboisement, sous-bois'),
+    f('chaud', 'chaude, chaleur, chaleureux, chaleureusement, chaudement, chaudière, chauffer, chauffage, chauffeur, réchauffer, réchauffement, échauffer, chauffe-eau'),
+    f('froid', 'froide, froideur, froidement, refroidir, refroidissement, refroidi'),
+    f('grand', 'grande, grandeur, grandir, grandement, agrandir, agrandissement, grandiose, grand-père, grand-mère, grands-parents'),
+    f('nom', 'nommer, renommer, renommée, dénommer, surnom, surnommer, prénom, pronom, nominal'),
+    f('roi', 'royal, royale, royaume, royauté, royalement, vice-roi'),
+    f('poisson', 'poissonnier, poissonnière, poissonnerie, poissonneux'),
+    f('fer', 'ferraille, ferrailleur, ferrer, ferronnier, ferronnerie, ferroviaire, ferreux, ferrure'),
+    f('vie', 'vivre, vivant, vivante, survivre, survivant, revivre, vital, vitalité, vivace, vivement'),
   ],
 };
 
@@ -84,8 +93,13 @@ export function normalize(s: string, keepAccents = false): string {
   return keepAccents ? n.normalize('NFC') : n.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
-/** Pluriel et féminin réguliers d'une forme normalisée. */
-const variants = (n: string) => [n, `${n}s`, `${n}x`, `${n}e`, `${n}es`];
+/** Pluriel et féminin réguliers d'une forme normalisée ; -é(e)(s) pour un mot en -er. */
+const variants = (n: string, keepAccents: boolean) => {
+  const forms = [n, `${n}s`, `${n}x`, `${n}e`, `${n}es`];
+  if (!n.endsWith('er')) return forms;
+  const e = `${n.slice(0, -2)}${keepAccents ? 'é' : 'e'}`;
+  return [...forms, e, `${e}e`, `${e}s`, `${e}es`];
+};
 
 export type Check =
   | { ok: true; member: string }
@@ -101,7 +115,7 @@ export function checkAnswer(family: Family, typed: string, found: readonly strin
   for (const keep of [true, false]) {
     const n = normalize(typed, keep);
     const same = (m: string) => normalize(m, keep) === n;
-    const like = (m: string) => variants(normalize(m, keep)).includes(n);
+    const like = (m: string) => variants(normalize(m, keep), keep).includes(n);
     // un mot de la liste tel quel passe avant les variantes (« amie », famille de « ami »)
     const member = family.members.find(same) ?? (like(family.word) ? undefined : family.members.find(like));
     if (member) return found.includes(member) ? { ok: false, reason: 'deja', member } : { ok: true, member };
@@ -112,3 +126,25 @@ export function checkAnswer(family: Family, typed: string, found: readonly strin
 
 /** Points du k-ième mot trouvé dans une même famille (1er : 10, 2e : 20…) : chercher loin rapporte. */
 export const pointsFor = (k: number) => 10 * k;
+
+export const MAX_CUSTOM = 30;
+
+/**
+ * Famille créée par les joueurs : le mot montré, puis ses mots séparés par des
+ * virgules, des points-virgules ou des retours à la ligne. Doublons et mot de départ
+ * retirés ; renvoie un message d'erreur si la famille est vide.
+ */
+export function parseFamily(word: string, text: string): Family | string {
+  const w = word.trim().replace(/\s+/g, ' ');
+  if (!w) return 'Écris le mot de départ.';
+  const seen = new Set([normalize(w, true)]);
+  const members: string[] = [];
+  for (const raw of text.split(/[,;\n]/)) {
+    const m = raw.trim().replace(/\s+/g, ' ');
+    if (!m || seen.has(normalize(m, true))) continue;
+    seen.add(normalize(m, true));
+    members.push(m);
+  }
+  if (!members.length) return 'Écris au moins un mot de la famille.';
+  return { word: w, members };
+}
