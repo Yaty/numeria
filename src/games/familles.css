@@ -1,0 +1,194 @@
+/* La course aux familles : un mot, un champ, les mots trouvés ; tour par tour, puis classement. */
+.fam-card {
+  max-width: 640px;
+  margin-inline: auto;
+}
+.fam-sub {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.fam-players {
+  margin: 0;
+  padding-left: 1.6em;
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  max-width: 360px;
+}
+.fam-players li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.fam-name,
+.fam-input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 1.15rem;
+  padding: 10px 14px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--ink);
+}
+.fam-name:focus,
+.fam-input:focus {
+  outline: 3px solid var(--primary);
+  outline-offset: 1px;
+}
+.quiz .btn.fam-remove {
+  min-height: 44px;
+  padding: 6px 12px;
+}
+
+.fam-turn {
+  margin: 0;
+  color: var(--muted, #5b6478);
+  font-weight: 700;
+}
+
+/* Pendant le tour. */
+.fam-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  font-weight: 700;
+}
+.fam-who {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fam-clock {
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+  padding: 2px 14px;
+  border-radius: 999px;
+  background: #eef3fb;
+}
+.fam-clock.low {
+  background: #fde8e6;
+  color: #b3261e;
+}
+.fam-score {
+  font-variant-numeric: tabular-nums;
+}
+.fam-word {
+  font-size: clamp(2.4rem, 9vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.fam-form {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 460px;
+}
+.fam-note {
+  margin: 0;
+  min-height: 1.4em;
+  font-weight: 700;
+  text-align: center;
+}
+.fam-note.good {
+  color: #1f9d55;
+}
+.fam-note.bad {
+  color: #b3261e;
+}
+.fam-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+}
+.fam-chips li {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #e5f6ec;
+  font-weight: 700;
+  animation: fam-pop 0.2s;
+}
+.fam-chips small {
+  color: #1f9d55;
+}
+@keyframes fam-pop {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* Bilan du tour. */
+.fam-review {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+}
+.fam-review li {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #f4f6fb;
+}
+.fam-found {
+  color: #1f7a45;
+  font-weight: 700;
+}
+
+/* Classement. */
+.fam-ranking {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  max-width: 460px;
+}
+.fam-ranking li {
+  display: grid;
+  grid-template-columns: 3rem 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: #f4f6fb;
+}
+.fam-ranking li.first {
+  background: #fff4d6;
+}
+.fam-medal {
+  grid-row: span 2;
+  font-size: 1.8rem;
+  text-align: center;
+}
+.fam-player {
+  font-weight: 700;
+  font-size: 1.2rem;
+  overflow-wrap: anywhere;
+}
+.fam-points {
+  grid-row: span 2;
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fam-chips li {
+    animation: none;
+  }
+}

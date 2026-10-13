@@ -2,6 +2,7 @@
 categories:
   - { slug: phonologie, name: "Conscience phonologique", emoji: "👂", description: "Entendre, découper et compter les sons de la langue." }
   - { slug: ecrit, name: "Langage écrit", emoji: "📖", description: "Lire vite et bien, repérer les mots dans la phrase." }
+  - { slug: morphologie, name: "Morphologie", emoji: "🌱", description: "Comment les mots se construisent : familles, préfixes, suffixes." }
   - { slug: syntaxe, name: "Morphosyntaxe et compréhension", emoji: "🗣️", description: "Construire et comprendre des phrases." }
   - { slug: memoire, name: "Mémoire et attention", emoji: "🧠", description: "Retenir et redire." }
   - { slug: maths, name: "Logico-mathématiques", emoji: "🔢", description: "Nombres, quantités, calcul et raisonnement." }
@@ -101,3 +102,13 @@ games:
       - "Repères : milieu, quarts ; lignes qui ne commencent pas à 0"
       - "Nombres négatifs, décimaux (dixièmes à millièmes) et grands nombres"
     levels: ["De 0 à 100, 250, 380… jusqu’à 1 000", "Ligne décalée (de 20 à 1 000, de 30 à 90…)", "Nombres négatifs (de −1 000 à 0)", "De −1 000 à 1 000", "Nombres à virgule, milliers, millions"]
+  - slug: familles
+    title: "La course aux familles"
+    emoji: "🌱"
+    category: morphologie
+    description: "Un mot apparaît : écris le plus de mots de sa famille en 3 minutes. Seul ou à plusieurs, chacun son tour, avec un classement à la fin."
+    objectives:
+      - "Morphologie dérivationnelle : familles de mots, préfixes et suffixes"
+      - "Évocation lexicale sous contrainte de temps"
+      - "Radicaux qui changent de forme (pied, piéton, pédale)"
+    levels: ["Mots du quotidien", "Grandes familles, préfixes et suffixes variés", "Radicaux qui changent de forme"]
