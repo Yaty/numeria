@@ -16,6 +16,12 @@ class Game
 
   def to_param = slug
 
+  # Niveau choisi par l'adulte : un entier de 1 au nombre de niveaux du jeu.
+  def level_from(param)
+    n = Integer(param.to_s, exception: false)
+    n if n && n.between?(1, levels.size)
+  end
+
   class << self
     def data
       @data = nil if Rails.env.development?

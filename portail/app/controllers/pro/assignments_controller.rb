@@ -5,10 +5,9 @@ class Pro::AssignmentsController < Pro::BaseController
   def create
     days = params[:days].to_i
     days = 14 unless Assignment::VALIDITY_DAYS.include?(days)
-    level = params[:level].to_s
     assignment = @patient.assignments.new(
       created_by: Current.user, game_slug: params[:slug].to_s, message: params[:message].to_s.strip.presence,
-      level: %w[1 2 3].include?(level) && params[:slug] != "numeria" ? level.to_i : nil,
+      level: params[:slug] == "numeria" ? nil : Game.all.find { |g| g.slug == params[:slug] }&.level_from(params[:level]),
       expires_at: days.days.from_now
     )
     if assignment.save

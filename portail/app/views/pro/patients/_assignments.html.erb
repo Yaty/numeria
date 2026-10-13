@@ -3,10 +3,10 @@
   <p class="muted small">Un lien vers un seul jeu, au niveau choisi, que l’enfant ouvre à la maison sans compte. Les résultats arrivent ici.</p>
   <%= form_with url: pro_patient_assignments_path(patient), class: "form exercise-form" do |f| %>
     <label>Jeu
-      <%= f.select :slug, Game.all.map { |g| [ "#{g.emoji} #{g.title}", g.slug ] }, {}, id: "exercise-game" %>
+      <%= f.select :slug, Game.all.map { |g| [ "#{g.emoji} #{g.title}", g.slug, { data: { levels: g.slug == "numeria" ? 0 : g.levels.size } } ] }, {}, id: "exercise-game" %>
     </label>
     <label>Niveau
-      <%= f.select :level, [ [ "Automatique (s’adapte)", "auto" ], [ "Niveau 1", "1" ], [ "Niveau 2", "2" ], [ "Niveau 3", "3" ] ], {}, id: "exercise-level" %>
+      <%= f.select :level, [ [ "Automatique (s’adapte)", "auto" ] ] + (1..Game.all.map { |g| g.levels.size }.max).map { |n| [ "Niveau #{n}", n.to_s ] }, {}, id: "exercise-level" %>
     </label>
     <label>Valable
       <%= f.select :days, Assignment::VALIDITY_DAYS.map { |d| [ "#{d} jours", d ] }, selected: 14 %>
@@ -49,3 +49,18 @@
     </ul>
   <% end %>
 </section>
+<script>
+  // Niveaux proposés selon le jeu choisi (Numéria : réglages propres au jeu).
+  (() => {
+    const game = document.getElementById("exercise-game");
+    const level = document.getElementById("exercise-level");
+    if (!game || !level) return;
+    const sync = () => {
+      const max = Number(game.selectedOptions[0]?.dataset.levels || 0);
+      for (const o of level.options) o.hidden = o.disabled = o.value !== "auto" && Number(o.value) > max;
+      if (level.selectedOptions[0]?.disabled) level.value = "auto";
+    };
+    game.addEventListener("change", sync);
+    sync();
+  })();
+</script>

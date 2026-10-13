@@ -19,6 +19,14 @@ class AssignmentsTest < ActionDispatch::IntegrationTest
     assert_equal 32, a.token.size
   end
 
+  test "niveau proposé selon le nombre de niveaux du jeu" do
+    assert_equal 5, create_link(slug: "ligne-numerique", level: "5").level
+    assert_nil create_link(slug: "phrases", level: "5").level # 3 niveaux : automatique
+    a = Assignment.new(profile: profiles(:patient), created_by: users(:pro), game_slug: "phrases", level: 4, expires_at: 1.day.from_now)
+    assert_not a.valid?
+    assert a.errors.key?(:level)
+  end
+
   test "l'enfant ouvre le lien sans compte et joue au niveau imposé" do
     a = create_link
     reset!

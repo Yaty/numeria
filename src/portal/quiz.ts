@@ -48,21 +48,25 @@ export interface LevelInfo {
   description: string;
 }
 
-export interface QuizGame {
+/**
+ * `L` : niveaux du jeu (1 | 2 | 3 par défaut). Un jeu peut en avoir plus : il
+ * déclare autant d'entrées dans `levels`, et `L` en conséquence.
+ */
+export interface QuizGame<L extends number = 1 | 2 | 3> {
   title: string;
   /** Consigne générale lue au début. */
   instructions: string;
-  levels: [LevelInfo, LevelInfo, LevelInfo];
+  levels: LevelInfo[];
   /** Jeu sans voix : rien n'est lu, pas de bouton 🔊 (l'adulte dit le mot). */
   silent?: boolean;
   /** Items par partie (10 par défaut). */
   itemsPerRound?: number;
   /** Fabrique un item ; `recent` = clés des derniers items, à éviter. */
-  makeItem(level: 1 | 2 | 3, rng: () => number, recent: string[]): QuizItem;
+  makeItem(level: L, rng: () => number, recent: string[]): QuizItem;
 }
 
 interface QuizState {
-  level: 1 | 2 | 3;
+  level: number;
   rounds: number;
   bestStars: Record<number, number>;
   recent: string[];
@@ -72,9 +76,9 @@ export const LEVEL_UP = 0.8;
 export const LEVEL_DOWN = 0.5;
 
 /** Niveau de la partie suivante selon le score (fraction de réussites). */
-export function nextLevel(level: 1 | 2 | 3, score: number): 1 | 2 | 3 {
-  if (score >= LEVEL_UP && level < 3) return (level + 1) as 1 | 2 | 3;
-  if (score < LEVEL_DOWN && level > 1) return (level - 1) as 1 | 2 | 3;
+export function nextLevel<L extends number>(level: L, score: number, levels = 3): L {
+  if (score >= LEVEL_UP && level < levels) return (level + 1) as L;
+  if (score < LEVEL_DOWN && level > 1) return (level - 1) as L;
   return level;
 }
 
@@ -90,25 +94,28 @@ export function starsFor(score: number): number {
   return score >= 0.9 ? 3 : score >= 0.7 ? 2 : score >= 0.4 ? 1 : 0;
 }
 
-function readState(raw: unknown): QuizState {
+const validLevel = (l: unknown, levels: number): l is number => typeof l === 'number' && Number.isInteger(l) && l >= 1 && l <= levels;
+
+function readState(raw: unknown, levels: number): QuizState {
   const s = (raw ?? {}) as Partial<QuizState>;
   return {
-    level: s.level === 2 || s.level === 3 ? s.level : 1,
+    level: validLevel(s.level, levels) ? s.level : 1,
     rounds: s.rounds ?? 0,
     bestStars: s.bestStars ?? {},
     recent: Array.isArray(s.recent) ? s.recent.slice(-30) : [],
   };
 }
 
-function forcedLevel(ctx: GameContext): 1 | 2 | 3 | null {
+function forcedLevel(ctx: GameContext, levels: number): number | null {
   const l = ctx.settings.level;
-  return l === 1 || l === 2 || l === 3 ? l : null;
+  return validLevel(l, levels) ? l : null;
 }
 
-export function quizGame(game: QuizGame): GameModule {
+export function quizGame<L extends number = 1 | 2 | 3>(game: QuizGame<L>): GameModule {
+  const levelCount = game.levels.length;
   return {
     mount(el, ctx) {
-      let state = readState(ctx.state);
+      let state = readState(ctx.state, levelCount);
       let disposed = false;
       const timers: number[] = [];
       const later = (fn: () => void, ms: number) => timers.push(window.setTimeout(() => !disposed && fn(), ms));
@@ -126,7 +133,7 @@ export function quizGame(game: QuizGame): GameModule {
       }
 
       function intro(): void {
-        const forced = forcedLevel(ctx);
+        const forced = forcedLevel(ctx, levelCount);
         const level = forced ?? state.level;
         shell(
           h(
@@ -139,7 +146,7 @@ export function quizGame(game: QuizGame): GameModule {
               'div',
               { class: 'quiz-levels' },
               game.levels.map((l, i) => {
-                const n = (i + 1) as 1 | 2 | 3;
+                const n = i + 1;
                 const stars = state.bestStars[n] ?? 0;
                 return h(
                   'button',
@@ -165,14 +172,14 @@ export function quizGame(game: QuizGame): GameModule {
         ctx.speak(game.instructions);
       }
 
-      function play(level: 1 | 2 | 3): void {
+      function play(level: number): void {
         const total = game.itemsPerRound ?? 10;
         let index = 0;
         let correctCount = 0;
 
         const next = () => {
           if (index >= total) return summary(level, correctCount / total, total);
-          const item = game.makeItem(level, rng, state.recent);
+          const item = game.makeItem(level as L, rng, state.recent);
           state.recent = [...state.recent, item.key].slice(-30);
           index++;
           showItem(item, index, total, level, (ok) => {
@@ -183,7 +190,7 @@ export function quizGame(game: QuizGame): GameModule {
         next();
       }
 
-      function showItem(item: QuizItem, index: number, total: number, level: 1 | 2 | 3, done: (ok: boolean) => void): void {
+      function showItem(item: QuizItem, index: number, total: number, level: number, done: (ok: boolean) => void): void {
         const started = performance.now();
         let answered = false;
         const feedback = h('div', { class: 'quiz-feedback', 'aria-live': 'polite' });
@@ -274,12 +281,12 @@ export function quizGame(game: QuizGame): GameModule {
         ctx.speak(say);
       }
 
-      function summary(level: 1 | 2 | 3, score: number, total: number): void {
+      function summary(level: number, score: number, total: number): void {
         const stars = starsFor(score);
         state.bestStars[level] = Math.max(state.bestStars[level] ?? 0, stars);
         state.rounds++;
-        const forced = forcedLevel(ctx);
-        const after = forced ?? nextLevel(level, score);
+        const forced = forcedLevel(ctx, levelCount);
+        const after = forced ?? nextLevel(level, score, levelCount);
         const moved = forced !== null ? 'same' : after > level ? 'up' : after < level ? 'down' : 'same';
         // niveau imposé (réglage ou exercice envoyé) : la progression automatique n'est pas touchée
         if (forced === null) state.level = after;

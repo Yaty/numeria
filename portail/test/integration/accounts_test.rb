@@ -43,6 +43,10 @@ class AccountsTest < ActionDispatch::IntegrationTest
     sign_in_as users(:famille)
     post parent_profile_settings_path(profiles(:lea)), params: { slug: "tambour", level: "3" }
     assert_equal 3, profiles(:lea).game_states.find_by(game_slug: "tambour").settings["level"]
+    post parent_profile_settings_path(profiles(:lea)), params: { slug: "tambour", level: "4" }
+    assert_nil profiles(:lea).game_states.find_by(game_slug: "tambour").settings["level"] # 3 niveaux seulement
+    post parent_profile_settings_path(profiles(:lea)), params: { slug: "ligne-numerique", level: "5" }
+    assert_equal 5, profiles(:lea).game_states.find_by(game_slug: "ligne-numerique").settings["level"]
     post parent_profile_settings_path(profiles(:lea)), params: { slug: "tambour", level: "auto" }
     assert_nil profiles(:lea).game_states.find_by(game_slug: "tambour").settings["level"]
   end

@@ -91,3 +91,13 @@ games:
       - "Système numérique approximatif : comparaison de collections avec inhibition de l’indice de taille"
       - "Ligne numérique mentale ; comparaison de nombres à deux chiffres (valeur positionnelle)"
     levels: ["Subitizing 1 à 5", "Configurations 4 à 10, comparaison de collections", "Ligne numérique, comparaison de nombres"]
+  - slug: ligne-numerique
+    title: "La ligne numérique"
+    emoji: "📏"
+    category: maths
+    description: "Place le nombre sur la ligne dont seuls les deux bouts sont écrits, ou lis le nombre que montre la flèche."
+    objectives:
+      - "Représentation analogique des nombres (estimation sur la droite numérique)"
+      - "Repères : milieu, quarts ; lignes qui ne commencent pas à 0"
+      - "Nombres négatifs, décimaux (dixièmes à millièmes) et grands nombres"
+    levels: ["De 0 à 100, 250, 380… jusqu’à 1 000", "Ligne décalée (de 20 à 1 000, de 30 à 90…)", "Nombres négatifs (de −1 000 à 0)", "De −1 000 à 1 000", "Nombres à virgule, milliers, millions"]

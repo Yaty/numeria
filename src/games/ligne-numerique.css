@@ -1,0 +1,188 @@
+/* La ligne numérique : une ligne, ses deux bouts écrits, un curseur à placer. */
+.nl-area {
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.nl {
+  width: 100%;
+  max-width: 680px;
+  box-sizing: border-box;
+  padding: 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+/* Zone de toucher haute ; la ligne elle-même est le trait du milieu. */
+.nl-bar {
+  position: relative;
+  height: 84px;
+  cursor: pointer;
+  touch-action: none;
+  border-radius: 10px;
+}
+.nl-bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 3px;
+  background: var(--ink, #1d2742);
+}
+.nl-bar:focus-visible {
+  outline: 3px solid var(--primary, #2f6fd6);
+  outline-offset: 4px;
+}
+.nl-tick {
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 34px;
+  margin: -17px 0 0 -3px;
+  border-radius: 3px;
+  background: var(--ink, #1d2742);
+}
+.nl-tick.start {
+  left: 0;
+}
+.nl-tick.end {
+  left: 100%;
+}
+.nl-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.nl-ends {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 -28px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.nl-ends span {
+  min-width: 56px;
+  text-align: center;
+}
+
+/* Marques posées sur la ligne. */
+.nl-mark {
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+}
+.nl-mark::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: -24px;
+  width: 6px;
+  height: 48px;
+  border-radius: 3px;
+  background: currentColor;
+}
+.nl-mark-label {
+  position: absolute;
+  bottom: 28px;
+  left: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--card, #fff);
+}
+.nl-cursor {
+  color: #2f6fd6;
+}
+.nl-cursor::after {
+  content: '▼';
+  position: absolute;
+  left: 0;
+  top: -46px;
+  transform: translateX(-50%);
+  font-size: 1.3rem;
+}
+.nl-cursor.right,
+.nl-target {
+  color: #1f9d55;
+}
+.nl-cursor.wrong,
+.nl-wrong {
+  color: #c0392b;
+}
+/* La bonne place s'écrit sous la ligne, l'essai au-dessus : les deux étiquettes ne se cachent pas. */
+.nl-target .nl-mark-label,
+.nl-wrong .nl-mark-label {
+  bottom: auto;
+  top: 28px;
+}
+.nl-cursor.wrong::after,
+.nl-cursor.right::after {
+  content: none;
+}
+.nl-arrow {
+  color: #8e44ad;
+}
+.nl-arrow::after {
+  content: '▼';
+  position: absolute;
+  left: 0;
+  top: -50px;
+  transform: translateX(-50%);
+  font-size: 1.6rem;
+}
+
+.quiz .btn.nl-ok {
+  min-height: 52px;
+  padding: 10px 28px;
+  font-size: 1.15rem;
+}
+.quiz .btn.nl-ok:disabled {
+  opacity: 0.45;
+}
+.nl-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+  max-width: 480px;
+}
+.quiz-choice.nl-choice {
+  min-height: 60px;
+  font-variant-numeric: tabular-nums;
+}
+.nl-choice .quiz-choice-label {
+  font-size: 1.4rem;
+}
+.nl-choices.done .nl-choice:not(.right):not(.wrong) {
+  opacity: 0.5;
+}
+
+@media (max-width: 600px) {
+  .nl {
+    padding: 0 22px;
+  }
+  .nl-ends {
+    margin: 0 -22px;
+    font-size: 1.1rem;
+  }
+  .nl-mark-label {
+    font-size: 0.95rem;
+  }
+}
+@media (max-height: 500px) {
+  .nl-area {
+    gap: 8px;
+  }
+  .nl-bar {
+    height: 70px;
+  }
+}

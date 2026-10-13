@@ -2,11 +2,11 @@
 module GameSettings
   def self.apply(profile, params)
     game = Game.find(params[:slug])
-    level = params[:level].to_s
+    level = game.level_from(params[:level])
     gs = profile.state_for(game.slug)
     settings = (gs.settings || {}).dup
-    if %w[1 2 3].include?(level)
-      settings["level"] = level.to_i
+    if level
+      settings["level"] = level
     else
       settings.delete("level")
     end

@@ -10,7 +10,7 @@ class Assignment < ApplicationRecord
   has_secure_token :token, length: 32
 
   validates :game_slug, inclusion: { in: ->(_) { Game.slugs } }
-  validates :level, inclusion: { in: [ 1, 2, 3 ] }, allow_nil: true
+  validate :level_within_game
   validates :message, length: { maximum: 280 }
   validates :expires_at, presence: true
 
@@ -31,5 +31,13 @@ class Assignment < ApplicationRecord
     n = attempts.count
     ok = attempts.where(correct: true).count
     { total: n, rate: n.zero? ? nil : (100.0 * ok / n).round }
+  end
+
+  private
+
+  def level_within_game
+    return if level.nil?
+    game_def = Game.all.find { |g| g.slug == game_slug }
+    errors.add(:level, "n’existe pas pour ce jeu") unless game_def&.level_from(level)
   end
 end

@@ -10,7 +10,7 @@ class GameTest < ActiveSupport::TestCase
     categories = Game.categories.map(&:slug)
     Game.all.each do |g|
       assert_includes categories, g.category, g.slug
-      assert_equal 3, g.levels.size, g.slug
+      assert_includes 3..5, g.levels.size, g.slug
       assert g.objectives.any?, g.slug
     end
   end
