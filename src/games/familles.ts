@@ -58,6 +58,7 @@ const wordsOf = (p: Player) => p.played.reduce((n, x) => n + x.found.length, 0);
 const time = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
 const game: GameModule = {
+  silent: true,
   mount(el, ctx) {
     const rng = seeded(Date.now() % 2147483647);
     const saved = ctx.state as Partial<State> | null;
@@ -280,7 +281,6 @@ const game: GameModule = {
         chips.replaceChildren();
         note.textContent = '';
         note.className = 'fam-note';
-        ctx.speak(played.family.word);
         input.focus();
       };
       const submit = () => {

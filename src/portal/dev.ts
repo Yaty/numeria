@@ -49,6 +49,8 @@ if (!GAMES[slug]) {
     speak: (t) => (params.has('muet') ? console.log('[voix]', t) : speak(t)),
     exit: () => (location.href = '?'),
   };
-  GAMES[slug]().then((g) => g.mount(el, ctx));
-  if (!params.has('muet')) prepareVoice();
+  GAMES[slug]().then((g) => {
+    g.mount(el, ctx);
+    if (!params.has('muet') && !g.silent) prepareVoice();
+  });
 }

@@ -19,11 +19,13 @@ if (el) {
     // voix choisie par le compte (ou par l'orthophoniste pour un exercice envoyé)
     if (cfg.voice) setChosenVoice(cfg.voice);
     const ctx = portalContext(cfg);
-    load().then((game) => game.mount(el, ctx));
+    load().then((game) => {
+      game.mount(el, ctx);
+      if (!game.silent) prepareVoice();
+    });
     const flush = () => ctx.flush();
     window.addEventListener('pagehide', flush);
     document.addEventListener('visibilitychange', () => document.visibilityState === 'hidden' && flush());
-    prepareVoice();
   }
 }
 

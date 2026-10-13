@@ -45,7 +45,7 @@ export const FAMILIES: Record<1 | 2, readonly Family[]> = {
     f('rouge', 'rougir, rougeur, rougeole, rougeâtre, rouget, rougeaud, rouge-gorge'),
     f('dormir', 'dortoir, dormeur, dormeuse, endormir, endormi, endormissement, rendormir'),
     f('feuille', 'feuillage, feuillu, effeuiller, feuilleton, feuilleter, feuillet, mille-feuille'),
-    f('tourner', 'tour, tournant, tournée, retour, retourner, détour, détourner, contourner, entourer, autour, tournevis, tournesol, tournoyer'),
+    f('tourner', 'tour, tournant, tournure, tournée, retour, retourner, détour, détourner, contourner, entourer, autour, tournevis, tournesol, tournoyer'),
     f('peindre', 'peinture, peintre, peint, repeindre, dépeindre'),
     f('vent', 'venter, venteux, ventilateur, ventiler, ventilation, éventail, paravent'),
     f('pluie', 'pleuvoir, pluvieux, parapluie, pluviomètre, pleuvoter, pluvial'),

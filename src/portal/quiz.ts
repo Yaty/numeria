@@ -114,6 +114,7 @@ function forcedLevel(ctx: GameContext, levels: number): number | null {
 export function quizGame<L extends number = 1 | 2 | 3>(game: QuizGame<L>): GameModule {
   const levelCount = game.levels.length;
   return {
+    silent: game.silent,
     mount(el, ctx) {
       let state = readState(ctx.state, levelCount);
       let disposed = false;

@@ -43,4 +43,6 @@ export interface GameContext {
 
 export interface GameModule {
   mount(el: HTMLElement, ctx: GameContext): () => void;
+  /** Jeu sans voix : la voix (lourde à charger) n'est pas préparée. */
+  silent?: boolean;
 }
