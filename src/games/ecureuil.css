@@ -1,0 +1,299 @@
+/* La réserve de l'écureuil : l'écureuil, l'image à ranger, les paniers. */
+.ecu-area {
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.ecu-scene {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+  max-width: 520px;
+  padding: 6px 0 0;
+}
+
+/* Feuilles d'automne qui tombent doucement. */
+.ecu-leaves {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ecu-leaves span {
+  position: absolute;
+  top: -30px;
+  font-size: 1.4rem;
+  opacity: 0.75;
+  animation: ecu-fall 9s linear infinite;
+}
+.ecu-leaves span:nth-child(1) { left: 8%; animation-delay: -2s; }
+.ecu-leaves span:nth-child(2) { left: 55%; animation-delay: -6s; animation-duration: 11s; }
+.ecu-leaves span:nth-child(3) { left: 88%; animation-delay: -4s; animation-duration: 10s; }
+@keyframes ecu-fall {
+  to {
+    transform: translate(-30px, 240px) rotate(300deg);
+  }
+}
+
+.ecu-squirrel {
+  width: 130px;
+  flex: none;
+}
+.ecu-squirrel svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.ecu-tail {
+  transform-origin: 120px 172px;
+  animation: ecu-sway 3.2s ease-in-out infinite;
+}
+@keyframes ecu-sway {
+  50% {
+    transform: rotate(-5deg);
+  }
+}
+.ecu-head {
+  transform-origin: 80px 115px;
+  transition: transform 0.3s;
+}
+.ecu-happy-eyes {
+  display: none;
+}
+.ecu-squirrel.happy svg {
+  animation: ecu-hop 0.5s ease-out 2;
+}
+.ecu-squirrel.happy .ecu-eyes {
+  display: none;
+}
+.ecu-squirrel.happy .ecu-happy-eyes {
+  display: inline;
+}
+.ecu-squirrel.happy .ecu-tail {
+  animation: ecu-wag 0.25s ease-in-out 4;
+}
+.ecu-squirrel.think .ecu-head {
+  transform: rotate(-12deg);
+}
+@keyframes ecu-hop {
+  40% {
+    transform: translateY(-22px);
+  }
+}
+@keyframes ecu-wag {
+  50% {
+    transform: rotate(9deg);
+  }
+}
+
+/* Niveau 3 : le geste du son cherché. */
+.ecu-sign {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  padding: 6px;
+  border-radius: 14px;
+  background: #fff;
+  border: 3px solid #e2b97c;
+  align-self: center;
+}
+.ecu-sign img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.ecu-sign strong {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+/* L'image à ranger : à glisser vers un panier. */
+.ecu-pic {
+  display: grid;
+  place-items: center;
+  width: 128px;
+  height: 128px;
+  flex: none;
+  border-radius: 28px;
+  background: #fff8ec;
+  border: 4px solid #e2b97c;
+  box-shadow: 0 6px 0 #d3a463;
+  font-size: 4.4rem;
+  line-height: 1;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: transform 0.25s;
+  z-index: 2;
+}
+.ecu-pic.dragging {
+  cursor: grabbing;
+  transition: none;
+  box-shadow: 0 14px 20px rgb(0 0 0 / 0.18);
+}
+.ecu-pic.stored {
+  transition: transform 0.55s cubic-bezier(0.5, -0.3, 0.6, 1), opacity 0.55s 0.25s;
+  opacity: 0;
+}
+.ecu-pic.nope {
+  animation: ecu-nope 0.4s;
+}
+@keyframes ecu-nope {
+  25% { transform: translateX(-10px) rotate(-4deg); }
+  75% { transform: translateX(10px) rotate(4deg); }
+}
+
+/* Les paniers en osier. */
+.ecu-baskets {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  max-width: 520px;
+}
+.ecu-baskets.n2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ecu-baskets.n3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.quiz .ecu-basket {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 132px;
+  padding: 12px 6px 14px;
+  border: 0;
+  border-top: 8px solid #8a5a2c;
+  border-radius: 10px 10px 34px 34px;
+  background:
+    repeating-linear-gradient(0deg, rgb(120 70 30 / 0.16) 0 3px, transparent 3px 14px),
+    repeating-linear-gradient(90deg, rgb(120 70 30 / 0.12) 0 3px, transparent 3px 18px),
+    #e3b77a;
+  color: #3b2314;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.quiz .ecu-basket:hover:not(:disabled),
+.quiz .ecu-basket.over {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 0 0 4px #f6d365;
+}
+.quiz .ecu-basket:disabled {
+  cursor: default;
+}
+.quiz .ecu-basket.right {
+  box-shadow: 0 0 0 5px #3aa76d;
+  animation: ecu-bounce 0.45s 0.45s;
+}
+.quiz .ecu-basket.wrong {
+  opacity: 0.6;
+}
+@keyframes ecu-bounce {
+  40% {
+    transform: scale(1.08);
+  }
+}
+.ecu-basket img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 14px;
+  background: #fff;
+  border: 3px solid #fff8ec;
+}
+.ecu-basket-icon {
+  font-size: 2.6rem;
+  line-height: 1;
+}
+.ecu-basket-label {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.ecu-dots {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.ecu-dots i {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff8ec;
+  border: 2px solid #8a5a2c;
+}
+.ecu-dots i.on {
+  background: #8a5a2c;
+}
+.ecu-word {
+  margin: 0;
+  min-height: 1.4em;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 600px), (max-height: 820px) {
+  .ecu-scene {
+    gap: 10px;
+  }
+  .ecu-squirrel {
+    width: 96px;
+  }
+  .ecu-sign img {
+    width: 48px;
+    height: 48px;
+  }
+  .ecu-pic {
+    width: 108px;
+    height: 108px;
+    font-size: 3.7rem;
+  }
+  .quiz .ecu-basket {
+    min-height: 116px;
+  }
+  .ecu-basket img {
+    width: 60px;
+    height: 60px;
+  }
+  .ecu-basket-label {
+    font-size: 1rem;
+  }
+}
+@media (max-height: 500px) {
+  .ecu-squirrel {
+    width: 80px;
+  }
+  .ecu-pic {
+    width: 84px;
+    height: 84px;
+    font-size: 2.8rem;
+  }
+  .quiz .ecu-basket {
+    min-height: 92px;
+  }
+  .ecu-basket img {
+    width: 44px;
+    height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ecu-leaves {
+    display: none;
+  }
+  .ecu-tail,
+  .ecu-squirrel.happy .ecu-tail,
+  .ecu-squirrel.happy svg,
+  .ecu-pic.nope {
+    animation: none;
+  }
+}

@@ -51,6 +51,17 @@ games:
       - "Traitement des groupes de consonnes (fleur, tracteur)"
       - "Correspondance son-graphème (niveau 3) ; c, g et s en couleur"
     levels: ["2 ou 3 sons", "3 à 5 sons, sans groupe de consonnes", "4 à 8 sons, groupes de consonnes, graphème sous chaque tambour, lettres muettes en gris"]
+  - slug: ecureuil
+    title: "La réserve de l’écureuil"
+    emoji: "🐿️"
+    category: phonologie
+    description: "Un petit écureuil range ses provisions : l’adulte dit le mot de l’image, l’enfant la glisse dans le bon panier. Entendre un son, choisir entre deux sons proches, trouver où il est dans le mot. Gestes Borel-Maisonny sur les paniers. Sans voix."
+    objectives:
+      - "Identification d’un phonème dans un mot"
+      - "Discrimination de sons proches (ch/s, f/v, k/g, an/on…)"
+      - "Localisation du phonème : début, milieu, fin"
+      - "Appui sur les gestes Borel-Maisonny (lien son-geste)"
+    levels: ["On entend le son ou pas", "Lequel de deux sons proches", "Au début, au milieu ou à la fin"]
   - slug: phrases
     title: "Phrases en désordre"
     emoji: "🧱"
