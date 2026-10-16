@@ -7,7 +7,7 @@ FROM docker.io/library/node:24-slim AS jeux
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
-COPY tsconfig.json vite.portal.config.ts ./
+COPY tsconfig.json vite.portal.config.ts vite.shared.ts ./
 COPY src ./src
 RUN npx vite build --config vite.portal.config.ts
 

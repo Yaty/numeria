@@ -7,6 +7,7 @@
  * que la voix n'est pas prête, rien n'est lu.
  */
 import type { VoiceId } from '@diffusionstudio/vits-web';
+import type { VoiceReply, VoiceRequest } from './voice.worker';
 
 const VOICE_KEY = 'numeria-voix';
 
@@ -114,13 +115,51 @@ export function prepareVoice(): Promise<void> {
   return preparing;
 }
 
+/** Synthèse dans un worker : la page ne se fige pas, le modèle n'est chargé qu'une fois. */
+let worker: Worker | null = null;
+let workerFailed = false;
+let nextId = 0;
+const pending = new Map<number, { resolve: (b: Blob) => void; reject: (e: Error) => void }>();
+
+function voiceWorker(): Worker | null {
+  if (worker || workerFailed || typeof Worker === 'undefined') return worker;
+  try {
+    worker = new Worker(new URL('./voice.worker.ts', import.meta.url), { type: 'module' });
+  } catch {
+    workerFailed = true;
+    return null;
+  }
+  worker.onmessage = (e: MessageEvent<VoiceReply>) => {
+    const p = pending.get(e.data.id);
+    pending.delete(e.data.id);
+    if ('wav' in e.data) p?.resolve(e.data.wav);
+    else p?.reject(new Error(e.data.error));
+  };
+  worker.onerror = () => {
+    // le worker n'a pas pu démarrer : on revient à la synthèse dans la page
+    workerFailed = true;
+    worker = null;
+    for (const p of pending.values()) p.reject(new Error('voix indisponible'));
+    pending.clear();
+  };
+  return worker;
+}
+
+function synthesize(id: VoiceId, text: string): Promise<Blob> {
+  const w = voiceWorker();
+  if (!w) return tts().then((lib) => lib.predict({ text, voiceId: id }));
+  return new Promise((resolve, reject) => {
+    const req = nextId++;
+    pending.set(req, { resolve, reject });
+    w.postMessage({ id: req, voiceId: id, text } satisfies VoiceRequest);
+  });
+}
+
 function neuralAudio(id: VoiceId, text: string): Promise<string> {
   const key = `${id}|${text}`;
   let url = cache.get(key);
   if (!url) {
-    url = tts()
-      .then((lib) => lib.predict({ text, voiceId: id }))
-      .then((wav) => URL.createObjectURL(wav));
+    url = synthesize(id, text).then((wav) => URL.createObjectURL(wav));
     url.catch(() => cache.delete(key));
     cache.set(key, url);
   }
