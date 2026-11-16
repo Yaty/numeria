@@ -1,0 +1,99 @@
+/* Qui, où, quand, quoi ? : un texte à lire, puis 4 questions à 3 images. */
+.quiz-item:has(.qoq) .quiz-stimulus-text {
+  font-size: 1.45rem;
+  font-weight: 500;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  text-align: left;
+  max-width: 38em;
+  margin: 0 auto;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: #fffbea;
+  border: 2px solid #f1e3a8;
+}
+
+.quiz-answers.qoq {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  max-width: 44em;
+  margin: 0 auto;
+}
+.qoq-question {
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 10px 12px 12px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.qoq-question.done {
+  border-color: var(--ok);
+  background: var(--ok-bg);
+}
+.qoq-question h3 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+}
+.qoq-question.done h3::after {
+  content: ' ✓';
+  color: var(--ok);
+}
+.qoq-choices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.qoq-choice {
+  border: 3px solid var(--line);
+  background: #fff;
+  border-radius: 14px;
+  padding: 8px 6px;
+  min-height: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+.qoq-choice:focus-visible {
+  outline: 3px solid var(--accent, #3b6fd8);
+  outline-offset: 2px;
+}
+.qoq-choice:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.qoq-emoji {
+  font-size: 2.6rem;
+  line-height: 1.1;
+}
+.qoq-label {
+  font-size: 1rem;
+  line-height: 1.25;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.qoq-choice.right {
+  border-color: var(--ok);
+  background: var(--ok-bg);
+}
+.qoq-choice.wrong {
+  border-color: var(--bad);
+  background: var(--bad-bg);
+  opacity: 0.55;
+  animation: shake 0.35s;
+}
+.qoq-choice:disabled:not(.right):not(.wrong) {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@media (max-width: 600px) {
+  .quiz-item:has(.qoq) .quiz-stimulus-text { font-size: 1.15rem; padding: 10px 12px; }
+  .qoq-choices { gap: 6px; }
+  .qoq-choice { min-height: 80px; padding: 6px 4px; }
+  .qoq-emoji { font-size: 2.1rem; }
+  .qoq-label { font-size: 0.85rem; }
+}

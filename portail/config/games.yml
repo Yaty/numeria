@@ -82,6 +82,17 @@ games:
       - "Phrases non canoniques : passives, clivées, relatives enchâssées"
       - "Négation et ordre temporel (avant de, après avoir)"
     levels: ["Phrases actives", "Passives et clivées", "Relatives, négation, ordre temporel"]
+  - slug: qui-ou-quand
+    title: "Qui, où, quand, quoi ?"
+    emoji: "🔎"
+    category: syntaxe
+    description: "Lis un court texte, puis trouve en images qui sont les personnages, où et quand ça se passe, et ce qu’ils font. La réponse n’est pas toujours écrite : il faut la déduire. Sans voix."
+    objectives:
+      - "Compréhension écrite de textes courts"
+      - "Inférences : déduire le lieu, le moment, les personnages et l’action à partir d’indices"
+      - "Reprises anaphoriques (pronoms sans antécédent explicite) et subordonnées"
+      - "Résister aux perturbateurs (mot du texte repris hors contexte, double sens)"
+    levels: ["Textes courts (cycle 2)", "Pronoms et subordonnées", "Textes plus longs (cycle 3)", "Experts (cycle 3, SEGPA)"]
   - slug: memoire
     title: "La mémoire des mots"
     emoji: "🧠"
