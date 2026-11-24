@@ -10,7 +10,8 @@
  * l'enfant trouve l'image.
  *
  * Niveau 1 : la roue à 3 axes (groupe, fonction, lieu), 3 propositions, une seule juste.
- * Niveau 2 : la roue complète (jusqu'à 5 axes), 4 propositions, une ou deux justes.
+ * Niveau 2 : la roue complète (jusqu'à 5 axes), 4 propositions (5 s'il y a 3 justes) ;
+ *            plusieurs justes pour « où » et « comment », parfois pour les autres.
  * Niveau 3 : devinette, 4 images de groupes différents ; le groupe est donné en dernier.
  * Niveau 4 : devinette fine, 4 images du même groupe (fraise, cerise, pomme…) ; il faut
  *            les traits distinctifs. Le groupe est donné en premier.
@@ -58,6 +59,9 @@ export function featureOf(x: Thing, axis: FeatureAxis, id: string): Feature {
 
 const form = (x: Thing, f: Feature) => (x.genre === 'f' && f.f ? f.f : f.label);
 
+/** Les lieux sont des phrases entières : « {Il} pousse… », « On {le} trouve… », « On {l}achète… ». */
+const place = (x: Thing, f: Feature) => f.label.replace('{Il}', il(x)).replace('{le}', le(x)).replace('{l}', 'l’');
+
 /** Question posée sur un axe. */
 export function question(x: Thing, axis: Axis): string {
   const fam = familyOf(x);
@@ -71,11 +75,9 @@ export function question(x: Thing, axis: Axis): string {
       if (fam === 'vetement') return 'À quoi ça sert ?';
       return 'Comment on s’en sert ?';
     case 'lieu':
-      if (fam === 'animal') return `Où vit-${pr} ?`;
-      if (fam === 'aliment') return 'Où ça pousse ?';
-      if (fam === 'vehicule') return `Où on ${le(x)} voit ?`;
-      if (fam === 'vetement') return `Où on ${le(x)} met ?`;
-      return `Où on ${le(x)} trouve ?`;
+      if (fam === 'vehicule') return `Où on peut ${le(x)} voir ?`;
+      if (fam === 'vetement') return `Où on ${le(x)} porte ?`;
+      return `Où on peut ${le(x)} trouver ?`;
     case 'description':
       return `Comment est-${pr} ?`;
     case 'association':
@@ -87,6 +89,7 @@ export function question(x: Thing, axis: Axis): string {
 export function optionText(x: Thing, axis: Axis, id: string): string {
   if (axis === 'groupe') return GROUPS[id as GroupId].label;
   const f = featureOf(x, axis, id);
+  if (axis === 'lieu') return place(x, f);
   const fam = familyOf(x);
   const withSubject = axis === 'description' || (axis === 'fonction' && (fam === 'animal' || fam === 'vehicule'));
   return withSubject ? `${il(x)} ${form(x, f)}` : form(x, f);
@@ -109,11 +112,7 @@ export function clueText(x: Thing, axis: Axis, id: string): string {
       if (fam === 'vetement') return `Ça sert ${w}.`;
       return `On s’en sert ${w}.`;
     case 'lieu':
-      if (fam === 'animal') return `${il(x)} vit ${w}.`;
-      if (fam === 'aliment') return `${il(x)} pousse ${w}.`;
-      if (fam === 'vehicule') return `On ${le(x)} voit ${w}.`;
-      if (fam === 'vetement') return `On ${le(x)} met ${w}.`;
-      return `On ${le(x)} trouve ${w}.`;
+      return `${place(x, f)}.`;
   }
 }
 
@@ -182,8 +181,10 @@ export function buildWheel(x: Thing, level: 1 | 2, rng: () => number): Panel[] {
   const size = level === 1 ? 3 : 4;
   return axes.map((axis) => {
     const right = shuffle(rng, rightOf(x, axis));
-    const need = level === 2 && right.length >= 2 && rng() < 0.5 ? 2 : 1;
-    const wrong = shuffle(rng, wrongOf(x, axis)).slice(0, size - need);
+    // Dès le niveau 2, « où » et « comment » ont plusieurs bonnes réponses (2 ou 3).
+    const several = level === 2 && right.length >= 2 && (axis === 'lieu' || axis === 'description' || rng() < 0.5);
+    const need = several ? (right.length >= 3 && rng() < 0.4 ? 3 : 2) : 1;
+    const wrong = shuffle(rng, wrongOf(x, axis)).slice(0, need === 3 ? 2 : size - need);
     const opt = (id: string, correct: boolean) => ({
       id,
       text: optionText(x, axis, id),
@@ -386,7 +387,7 @@ export const game: QuizGame<Level> = {
   itemsPerRound: 6,
   levels: [
     { label: 'La roue : 3 questions', description: 'Groupe, fonction, lieu ; 3 propositions, une juste' },
-    { label: 'La roue complète', description: 'Jusqu’à 5 questions, 4 propositions, une ou deux justes' },
+    { label: 'La roue complète', description: 'Jusqu’à 5 questions ; plusieurs bonnes réponses pour « où » et « comment »' },
     { label: 'Devinettes', description: 'Les indices un à un, 4 images de groupes différents' },
     { label: 'Devinettes fines', description: '4 images du même groupe : il faut les traits qui les distinguent' },
   ],

@@ -40,18 +40,17 @@ describe('roue des mots : données', () => {
     }
   });
 
-  it('chaque objet a au moins fonction, lieu et description (sauf exception) et assez de pièges', () => {
+  it('chaque objet a une fonction, au moins 2 lieux et 2 descriptions, et assez de pièges', () => {
     for (const x of THINGS) {
       expect(x.fonction.oui.length, `${x.id} fonction`).toBeGreaterThan(0);
-      expect(x.lieu.oui.length, `${x.id} lieu`).toBeGreaterThan(0);
+      expect(x.lieu.oui.length, `${x.id} lieu`).toBeGreaterThanOrEqual(2);
+      expect(x.description.oui.length, `${x.id} description`).toBeGreaterThanOrEqual(2);
       for (const axis of AXES) {
         if (!rightOf(x, axis).length) continue;
         // roue complète : 4 propositions, dont 1 juste au moins
         expect(wrongOf(x, axis).length, `${x.id} ${axis} : pièges`).toBeGreaterThanOrEqual(3);
       }
     }
-    // l'exception : la description du maillot de bain
-    expect(THINGS.filter((x) => !x.description.oui.length).map((x) => x.id)).toEqual(['maillot']);
   });
 
   it('chaque groupe a au moins 3 objets, chaque famille de quoi faire une devinette fine', () => {
@@ -75,7 +74,10 @@ describe('roue des mots : phrases', () => {
     expect(clueText(byId('citron'), 'lieu', 'arbre')).toBe('Il pousse sur un arbre.');
     expect(clueText(byId('casquette'), 'association', 'soleil')).toBe('Ça fait penser au soleil.');
     expect(clueText(byId('lion'), 'groupe', 'animal')).toBe('C’est un animal.');
-    expect(question(byId('chaise'), 'lieu')).toBe('Où on la trouve ?');
+    expect(question(byId('chaise'), 'lieu')).toBe('Où on peut la trouver ?');
+    expect(optionText(byId('pomme'), 'lieu', 'marche')).toBe('On l’achète au marché');
+    expect(optionText(byId('lion'), 'lieu', 'zoo')).toBe('On le voit au zoo');
+    expect(clueText(byId('casquette'), 'lieu', 'tete')).toBe('On la met sur la tête.');
     expect(aLabel('les vacances')).toBe('aux vacances');
   });
 
@@ -102,11 +104,12 @@ describe('roue des mots : parties', () => {
         const panels = buildWheel(x, level, rng);
         expect(panels.length, x.id).toBe(level === 1 ? 3 : AXES.filter((a) => rightOf(x, a).length).length);
         for (const p of panels) {
-          expect(p.options.length).toBe(level === 1 ? 3 : 4);
+          expect(p.options.length).toBe(level === 1 ? 3 : p.need === 3 ? 5 : 4);
           expect(new Set(p.options.map((o) => o.text)).size, `${x.id} ${p.axis}`).toBe(p.options.length);
           const right = p.options.filter((o) => o.correct);
           expect(right.length).toBe(p.need);
           if (level === 1 || p.axis === 'groupe') expect(p.need).toBe(1);
+          if (level === 2 && (p.axis === 'lieu' || p.axis === 'description')) expect(p.need, `${x.id} ${p.axis}`).toBeGreaterThanOrEqual(2);
           for (const o of right) expect(rightOf(x, p.axis)).toContain(o.id);
           for (const o of p.options.filter((o) => !o.correct)) expect(wrongOf(x, p.axis)).toContain(o.id);
         }
