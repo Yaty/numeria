@@ -139,7 +139,7 @@ games:
     title: "La roue des mots"
     emoji: "🎡"
     category: lexique
-    description: "Une image au milieu d’une roue : trouve ce que c’est, ce qu’il fait, où on le trouve, comment il est et à quoi il fait penser. En devinette, c’est l’inverse : les indices arrivent un à un et il faut trouver l’image."
+    description: "Une image au milieu d’une roue : trouve ce que c’est, ce qu’il fait, où on le trouve, comment il est et à quoi il fait penser. En devinette, c’est l’inverse : les indices arrivent un à un et il faut trouver l’image. Une seule chance par question. Sans voix."
     objectives:
       - "Analyse des traits sémantiques (Semantic Feature Analysis) : catégorie, fonction, lieu, propriétés, association"
       - "Manque du mot : évocation du nom soutenue par l’activation du réseau sémantique"

@@ -15,12 +15,13 @@
  * Niveau 4 : devinette fine, 4 images du même groupe (fraise, cerise, pomme…) ; il faut
  *            les traits distinctifs. Le groupe est donné en premier.
  *
- * Réussi = aucune erreur dans la roue, ou image trouvée sans se tromper en devinette
- * (demander un indice de plus n'est pas une erreur).
+ * Une seule tentative par question (sinon on trouve en touchant tout) : une erreur clôt
+ * la question et montre la bonne réponse. Réussi = aucune erreur dans la roue, ou la
+ * bonne image du premier coup en devinette (demander un indice de plus est permis).
+ * Jeu sans voix : l'adulte lit avec l'enfant si besoin.
  */
 import { shuffle } from '../core/random';
 import { quizGame, typo, type QuizGame, type QuizItem } from '../portal/quiz';
-import type { GameContext } from '../portal/types';
 import { h } from '../ui/dom';
 import { ASSOCIATIONS, GROUPS, POOLS, THINGS, familyOf, type Feature, type FeatureAxis, type GroupId, type Thing } from '../data/roue-des-mots';
 import './roue-des-mots.css';
@@ -240,34 +241,21 @@ export function buildRiddle(x: Thing, level: 3 | 4, rng: () => number): Riddle {
 }
 
 // ——— Rendu ———
-
-function sayButton(ctx: GameContext, label: string, text: string) {
-  return h('button', { class: 'q-say rdm-say', type: 'button', 'aria-label': label, onclick: () => ctx.speak(text) }, '🔊');
-}
+// Une seule tentative par question : une erreur clôt la question et montre la bonne
+// réponse, pour qu'on ne puisse pas trouver en essayant tout.
 
 /** Récapitulatif des bons traits, en phrases, montré après une erreur. */
 const recap = (x: Thing, panels: Panel[]) =>
   [`C’est ${nameOf(x)}.`, ...panels.flatMap((p) => p.options.filter((o) => o.correct).map((o) => clueText(x, p.axis, o.id)))].join(' ');
 
 function renderWheel(x: Thing, panels: Panel[]) {
-  return (el: HTMLElement, answer: (correct: boolean, detail?: string) => void, ctx: GameContext) => {
+  return (el: HTMLElement, answer: (correct: boolean, detail?: string) => void) => {
     el.classList.add('rdm', `rdm-axes-${panels.length}`);
     const missed = new Set<Axis>();
     let done = 0;
 
     const name = h('div', { class: 'rdm-name', hidden: true }, nameOf(x));
-    const reveal = h(
-      'button',
-      {
-        class: 'rdm-reveal',
-        type: 'button',
-        onclick: () => {
-          showName();
-          ctx.speak(`C’est ${nameOf(x)}.`);
-        },
-      },
-      'Voir le nom',
-    );
+    const reveal = h('button', { class: 'rdm-reveal', type: 'button', onclick: () => showName() }, 'Voir le nom');
     const showName = () => {
       name.hidden = false;
       reveal.hidden = true;
@@ -286,13 +274,20 @@ function renderWheel(x: Thing, panels: Panel[]) {
       let found = 0;
       const list = h('div', { class: 'rdm-options' });
       const badge = p.need > 1 ? h('span', { class: 'rdm-need' }, `${p.need} réponses`) : null;
-      const spoken = `${p.question} ${p.options.map((o) => o.text).join(' ; ')}.`;
       const panel = h(
         'section',
         { class: `rdm-panel rdm-${p.axis}`, 'aria-label': p.question },
-        h('h3', {}, h('span', { class: 'rdm-icon', 'aria-hidden': 'true' }, AXIS_ICON[p.axis]), h('span', {}, typo(p.question)), badge, sayButton(ctx, 'Écouter', spoken)),
+        h('h3', {}, h('span', { class: 'rdm-icon', 'aria-hidden': 'true' }, AXIS_ICON[p.axis]), h('span', {}, typo(p.question)), badge),
         list,
       );
+      const close = (ok: boolean) => {
+        panel.classList.add(ok ? 'done' : 'missed');
+        for (const b of list.querySelectorAll<HTMLButtonElement>('button')) {
+          if (!ok && b.dataset.correct && !b.classList.contains('right')) b.classList.add('right', 'shown');
+          b.disabled = true;
+        }
+        if (++done === panels.length) finish();
+      };
       for (const o of p.options) {
         const btn: HTMLButtonElement = h(
           'button',
@@ -300,23 +295,22 @@ function renderWheel(x: Thing, panels: Panel[]) {
             class: `rdm-option ${o.emoji ? 'has-emoji' : ''}`,
             type: 'button',
             onclick: () => {
-              if (btn.disabled || panel.classList.contains('done')) return;
+              if (btn.disabled || panel.matches('.done, .missed')) return;
               btn.disabled = true;
               if (!o.correct) {
                 missed.add(p.axis);
                 btn.classList.add('wrong');
+                close(false);
                 return;
               }
               btn.classList.add('right');
-              if (++found < p.need) return;
-              panel.classList.add('done');
-              for (const other of list.querySelectorAll('button')) other.disabled = true;
-              if (++done === panels.length) finish();
+              if (++found === p.need) close(true);
             },
           },
           o.emoji ? h('span', { class: 'rdm-option-emoji', 'aria-hidden': 'true' }, o.emoji) : null,
           h('span', {}, typo(o.text)),
         );
+        if (o.correct) btn.dataset.correct = '1';
         list.append(btn);
       }
       el.append(panel);
@@ -325,8 +319,7 @@ function renderWheel(x: Thing, panels: Panel[]) {
     function finish() {
       showName();
       el.classList.add('finished');
-      ctx.speak(`C’est ${nameOf(x)} !`);
-      // on laisse le temps de voir le nom avant le « Bravo » du moteur
+      // on laisse le temps de voir le nom et les corrections avant la suite
       window.setTimeout(() => {
         if (el.isConnected) answer(missed.size === 0, missed.size ? [...missed].join(', ') : undefined);
       }, 1600);
@@ -335,22 +328,20 @@ function renderWheel(x: Thing, panels: Panel[]) {
 }
 
 function renderRiddle(x: Thing, riddle: Riddle) {
-  return (el: HTMLElement, answer: (correct: boolean, detail?: string) => void, ctx: GameContext) => {
+  return (el: HTMLElement, answer: (correct: boolean, detail?: string) => void) => {
     el.classList.add('rdm-riddle');
     let shown = 0;
-    let mistakes = 0;
-    let solved = false;
+    let over = false;
     const list = h('ol', { class: 'rdm-clues' });
-    const more = h('button', { class: 'btn rdm-more', type: 'button', onclick: () => next(true) }, '💡 Encore un indice');
+    const more = h('button', { class: 'btn rdm-more', type: 'button', onclick: () => next() }, '💡 Encore un indice');
 
-    function next(speakIt: boolean) {
+    function next() {
       if (shown >= riddle.clues.length) return;
       const c = riddle.clues[shown++];
       list.append(h('li', { class: `rdm-clue rdm-${c.axis}` }, h('span', { class: 'rdm-icon', 'aria-hidden': 'true' }, AXIS_ICON[c.axis]), h('span', {}, typo(c.text))));
       more.disabled = shown >= riddle.clues.length;
-      if (speakIt) ctx.speak(c.text);
     }
-    next(false); // le premier indice est lu avec la consigne
+    next();
 
     const grid = h('div', { class: 'rdm-choices' });
     for (const d of riddle.choices) {
@@ -360,29 +351,27 @@ function renderRiddle(x: Thing, riddle: Riddle) {
           class: 'rdm-choice',
           type: 'button',
           onclick: () => {
-            if (solved || btn.disabled) return;
-            btn.disabled = true;
-            if (d.id !== x.id) {
-              mistakes++;
-              btn.classList.add('wrong');
-              next(true);
-              return;
-            }
-            solved = true;
+            if (over) return;
+            over = true;
             const used = shown;
-            btn.classList.add('right');
-            while (shown < riddle.clues.length) next(false);
+            const ok = d.id === x.id;
+            btn.classList.add(ok ? 'right' : 'wrong');
+            if (!ok) grid.querySelector('[data-correct]')?.classList.add('right', 'shown');
+            while (shown < riddle.clues.length) next();
             more.disabled = true;
             for (const b of grid.querySelectorAll('button')) b.disabled = true;
-            ctx.speak(`C’est ${nameOf(x)} !`);
+            const detail = `${used} indice(s)${ok ? '' : `, a choisi ${d.nom}`}`;
+            // une erreur : le moteur montre tout de suite la correction
+            if (!ok) return answer(false, detail);
             window.setTimeout(() => {
-              if (el.isConnected) answer(mistakes === 0, `${used} indice(s)${mistakes ? `, ${mistakes} erreur(s)` : ''}`);
+              if (el.isConnected) answer(true, detail);
             }, 1600);
           },
         },
         h('span', { class: 'rdm-choice-emoji', 'aria-hidden': 'true' }, d.emoji),
         h('span', { class: 'rdm-choice-label' }, d.nom),
       );
+      if (d.id === x.id) btn.dataset.correct = '1';
       grid.append(btn);
     }
     el.append(list, more, grid);
@@ -392,7 +381,8 @@ function renderRiddle(x: Thing, riddle: Riddle) {
 export const game: QuizGame<Level> = {
   title: 'La roue des mots',
   instructions:
-    'Regarde l’image au milieu de la roue et essaie de dire son nom. Puis, tout autour, touche les bonnes réponses : ce que c’est, ce qu’il fait, où on le trouve… Dans les devinettes, c’est le contraire : écoute les indices et trouve l’image !',
+    'Regarde l’image au milieu de la roue et essaie de dire son nom. Puis, tout autour, touche les bonnes réponses : ce que c’est, ce qu’il fait, où on le trouve… Attention, une seule chance par question ! Dans les devinettes, c’est le contraire : lis les indices et trouve l’image.',
+  silent: true,
   itemsPerRound: 6,
   levels: [
     { label: 'La roue : 3 questions', description: 'Groupe, fonction, lieu ; 3 propositions, une juste' },
@@ -407,7 +397,6 @@ export const game: QuizGame<Level> = {
       return {
         key: keyOf(level, x),
         prompt: 'Dis le nom de l’image, puis touche les bonnes réponses.',
-        say: 'Regarde l’image. Essaie de dire son nom, puis touche les bonnes réponses tout autour.',
         custom: renderWheel(x, panels),
         explain: recap(x, panels),
       };
@@ -416,7 +405,6 @@ export const game: QuizGame<Level> = {
     return {
       key: keyOf(level, x),
       prompt: 'Devinette : qui suis-je ?',
-      say: `Devinette ! ${riddle.clues[0].text}`,
       custom: renderRiddle(x, riddle),
       explain: `C’était ${nameOf(x)}. ${riddle.clues.map((c) => c.text).join(' ')}`,
     };

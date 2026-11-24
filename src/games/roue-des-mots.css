@@ -107,9 +107,16 @@
   align-items: center;
   gap: 6px;
   margin: 0 0 8px;
-  padding-right: 38px;
   font-size: 1.08rem;
   line-height: 1.25;
+}
+.rdm-panel.missed {
+  border-color: var(--bad);
+  border-top-color: var(--c);
+}
+.rdm-option.shown,
+.rdm-choice.shown {
+  border-style: dashed;
 }
 .rdm-panel.done h3::after {
   content: '✓';
@@ -124,14 +131,6 @@
   background: var(--c);
   border-radius: 999px;
   padding: 1px 8px;
-}
-.rdm-say.q-say {
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  width: 34px;
-  height: 34px;
-  font-size: 1rem;
 }
 
 .rdm-options {
@@ -231,6 +230,7 @@
 .rdm-clue.rdm-description { --c: var(--rdm-description); }
 .rdm-clue.rdm-association { --c: var(--rdm-association); }
 .rdm-more { align-self: center; }
+.rdm-more:disabled { opacity: 0.4; cursor: default; }
 .rdm-choices {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
